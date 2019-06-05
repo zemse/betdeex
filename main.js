@@ -57,7 +57,7 @@ window.addEventListener('load', async () => {
   console.log('web3 object created', web3);
   //console.log(esContractAbi);
   const esContract = new web3.eth.Contract(esContractAbi, '3beb087e33ec0b830325991a32e3f8bb16a51317');
-  const betdeex = new web3.eth.Contract(betdeexAbi, '22e0940c1ae5d31b9efbaf7d674f7d62895fbde8');
+  const betdeex = new web3.eth.Contract(betdeexAbi, 'c4336494606203e3907539d5b462a5cb7853b3c6');
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
@@ -97,15 +97,21 @@ window.addEventListener('load', async () => {
     //         await betInstance.methods.category().call(),
     //         await betdeex.methods.betBalanceInExaEs(betAddress).call(),
     //         await betInstance.methods.minimumBetInExaEs().call(),
-    //         await betInstance.methods.pricePercentPerThousand().call()
+    //         await betInstance.methods.pricePercentPerThousand().call(),
+    //         1500000000
     //       )
     //     );
     //   })();
     // }
+    let events;
 
-    const events = await betdeex.getPastEvents('NewBetContract', {
-      fromBlock: 1
-    });
+    try {
+      events = await betdeex.getPastEvents('NewBetContract', {
+        fromBlock: 1
+      });
+    } catch (e) {
+      console.log(err.message);
+    }
 
     console.log('events', events);
 
