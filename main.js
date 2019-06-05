@@ -57,7 +57,7 @@ window.addEventListener('load', async () => {
   console.log('web3 object created', web3);
   //console.log(esContractAbi);
   const esContract = new web3.eth.Contract(esContractAbi, '3beb087e33ec0b830325991a32e3f8bb16a51317');
-  const betdeex = new web3.eth.Contract(betdeexAbi, 'e14d14bd8d0e2c36f5e4d00106417d8cf1000e22');
+  const betdeex = new web3.eth.Contract(betdeexAbi, '22e0940c1ae5d31b9efbaf7d674f7d62895fbde8');
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
@@ -66,14 +66,18 @@ window.addEventListener('load', async () => {
     const accounts = await web3.eth.getAccounts();
     userAccount = accounts[0];
     console.log('user account addr', userAccount);
+    try {
+      const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
+      document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
 
-    const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
-    document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
+      const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
+      document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) ) + ' ES';
 
-    const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
-    document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) ) + ' ES';
+      console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
+    } catch (e) {
+      console.log(e.message);
+    }
 
-    console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
   })();
 
   (async () => {
