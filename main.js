@@ -20,7 +20,7 @@ const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet
     //alert(_betAddress);
     betAddressInModal = _betAddress;
     betmodal.children[0].children[0].children[1].children[0].children[0].children[1].innerText = _description;
-    betmodal.children[0].children[0].children[1].children[0].children[2].children[0].children[2].children[0].innerHTML = isMetamaskRunning ? 'Metamask found in browser and your address is' + userAccount : 'Please install <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en" target="_blank"><span style="color: #4caf50;">MetaMask</span> </a> chrome extention to place the bet.';
+    betmodal.children[0].children[0].children[1].children[0].children[2].children[0].children[2].children[0].innerHTML = isMetamaskRunning ? 'Metamask found in browser and your account address is: ' + userAccount : 'Please install <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en" target="_blank"><span style="color: #4caf50;">MetaMask</span> </a> chrome extention to place the bet.';
   });
 
   return newBetBox;//betlist.appendChild(newBetBox);
@@ -57,7 +57,7 @@ window.addEventListener('load', async () => {
   console.log('web3 object created', web3);
   //console.log(esContractAbi);
   const esContract = new web3.eth.Contract(esContractAbi, '3beb087e33ec0b830325991a32e3f8bb16a51317');
-  const betdeex = new web3.eth.Contract(betdeexAbi, 'ca4d0578c5e07f0964c7e7ccc87e606a234625b8');
+  const betdeex = new web3.eth.Contract(betdeexAbi, 'e14d14bd8d0e2c36f5e4d00106417d8cf1000e22');
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
