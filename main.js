@@ -1,6 +1,7 @@
 var category = 'Cricket';
 var web3;
 var provider;
+var userAccount;
 var isMetamaskRunning = false;
 var numberOfBets;
 var betAddressInModal; // declared for noting which bet user clicked
@@ -61,7 +62,6 @@ window.addEventListener('load', async () => {
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
 
-  var userAccount;
   (async () => {
     const accounts = await web3.eth.getAccounts();
     userAccount = accounts[0];
@@ -145,13 +145,11 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
 
   try {
     await betInstance.methods.enterBet(choice, amount).send({ from: userAccount });
+    console.log('Successfully sent bet');
   } catch (e) {
     console.log(e.message);
   }
 
-  setTimeout(() => {
-    document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
-  }, 1000);
 
-
+  document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
 });
