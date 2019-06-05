@@ -152,7 +152,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
   document.getElementById('modalSubmit').children[1].innerText = 'Please wait..';
 
   try {
-    await betInstance.methods.enterBet(choice, amount).send({ from: userAccount });
+    await betInstance.methods.enterBet(choice, amount * (10**18)).send({ from: userAccount });
     console.log('Successfully sent bet');
   } catch (e) {
     console.log(e.message);
