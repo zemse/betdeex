@@ -68,10 +68,10 @@ window.addEventListener('load', async () => {
     console.log('user account addr', userAccount);
 
     const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
-    document.getElementById('main-es-bal').innerText = mainEsBal / 10**18;
+    document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) );
 
     const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
-    document.getElementById('betdeex-es-bal').innerText = betdeexEsBal / 10**18;
+    document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) );
 
     console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
   })();
