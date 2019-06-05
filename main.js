@@ -66,6 +66,12 @@ window.addEventListener('load', async () => {
     const accounts = await web3.eth.getAccounts();
     userAccount = accounts[0];
     console.log('user account addr', userAccount);
+
+    const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
+    document.getElementById('main-es-bal').innerText = mainEsBal;
+
+    const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
+    document.getElementById('betdeex-es-bal').innerText = betdeexEsBal;
   })();
 
   (async () => {
