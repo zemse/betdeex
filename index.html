@@ -380,8 +380,8 @@
                                        </li>
                                     </ul>
                                     <div class="inn-tickers">
-                                       <a id="modalSubmit" href="booking.html" class="inn-reg-com inn-reg-book" data-toggle="modal" data-target="#betmodal"><i
-                                          class="fa fa-exchange" aria-hidden="true"></i> Place a Bet</a>
+                                       <a class="inn-reg-com inn-reg-book" data-toggle="modal" data-target="#betmodal"><i
+                                          class="fa fa-exchange" aria-hidden="true"></i><span>Place a Bet</span></a>
                                     </div>
                                  </section>
                               </article>
@@ -420,17 +420,18 @@
                             <div class="form-group">
 
                                 <div class="col-sm-12">
-                                    <select id="option" name="option" class="form-control" required="">
+                                    <select id="modal-option" name="option" class="form-control" required="">
                                         <option value="">Select Here</option>
-                                        <option value="Yes">Yes </option>
-                                        <option value="No">No</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                        <option value="2">Draw</option>
 									</select>
                                 </div>
                             </div>
                             <div class="form-group">
 
                                 <div class="col-sm-12">
-                                    <input type="text" id="value" name="value" class="form-control" placeholder="Enter Ether to place a bet" required="">
+                                    <input type="number" id="modal-es-amount" name="value" class="form-control" placeholder="Enter amount of ES to place a bet" required>
                                 </div>
                             </div>
 
@@ -442,7 +443,7 @@
                             <div class="form-group">
                                 <div class="col-sm-12 text-center">
                                   <div class="inn-tickers">
-                                       <button type="submit" onclick="getValue()"><a href="" class="inn-reg-com inn-reg-book" data-toggle="modal" data-target="#betmodal" type="submit"><i class="fa fa-exchange" aria-hidden="true"></i> Place a Bet</a></button>
+                                       <a id="modalSubmit" class="inn-reg-com inn-reg-book"><i class="fa fa-exchange" aria-hidden="true"></i><span>Place a Bet</span></a>
                                     </div>
                                 </div>
                             </div>

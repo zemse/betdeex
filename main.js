@@ -132,7 +132,26 @@ window.addEventListener('load', async () => {
 
 
 
-document.getElementById('modalSubmit').addEventListener('click', () => {
+document.getElementById('modalSubmit').addEventListener('click', async() => {
   // sign and send transaction.
+  const choice = Number(document.getElementById('modal-option').value);
+  const amount = Number(document.getElementById('modal-es-amount').value);
+
+  const betInstance = new web3.eth.Contract(betAbi, betAddressInModal);
+
+
+
+  document.getElementById('modalSubmit').children[1].innerText = 'Please wait..';
+
+  try {
+    await betInstance.methods.enterBet(choice, amount).send({ from: userAccount });
+  } catch (e) {
+    console.log(e.message);
+  }
+
+  setTimeout(() => {
+    document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
+  }, 1000);
+
 
 });
