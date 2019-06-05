@@ -1328,6 +1328,25 @@ const betAbi = [
 				"type": "uint256"
 			}
 		],
+		"name": "totalBetTokensInExaEsByChoice",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
 		"name": "yesBettors",
 		"outputs": [
 			{
@@ -1347,6 +1366,20 @@ const betAbi = [
 		"constant": true,
 		"inputs": [],
 		"name": "minimumBetInExaEs",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "pricePercentPerThousand",
 		"outputs": [
 			{
 				"name": "",
