@@ -312,7 +312,7 @@ const makeMenuItemLive = (_id, _category, _subCategory) => {
     currentCategory = _category;
     currentSubCategory = _subCategory;
     console.log('loading the cat-sub cat', _category, _subCategory);
-    document.getElementById('categoryDisplay').innerText = env.subCategory[_category, _subCategory];
+    document.getElementById('categoryDisplay').innerText = env.subCategory[_category][_subCategory];
     loadBets();
   });
 }
