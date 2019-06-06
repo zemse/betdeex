@@ -177,13 +177,12 @@ window.addEventListener('load', async () => {
     //   console.log(err.message);
     // }
 
-    (() => {
-      const betdeex = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
-      betdeex.NewBetContract().get((err, res) => {
-        console.log(res);
-        events = res;
-      });
-    })()
+
+    const betdeexW = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+    betdeexW.NewBetContract().get((err, res) => {
+      console.log(res);
+      events = res;
+    });
 
     console.log('events', events);
 
