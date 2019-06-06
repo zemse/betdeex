@@ -179,8 +179,9 @@ window.addEventListener('load', async () => {
 
     (() => {
       const betdeex = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
-      betdeex.NewBetContract().watch((err, res) => {
+      betdeex.NewBetContract().get((err, res) => {
         console.log(res);
+        events = res;
       });
     })()
 
