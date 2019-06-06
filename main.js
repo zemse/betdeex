@@ -278,7 +278,7 @@ window.addEventListener('load', async () => {
     console.log('user account addr', userAccount);
     if(userAccount) {
       document.getElementById('uAccount').children[0].innerText = 'Connected';
-      document.getElementById('uAccount').children[1].innerText = userAccount;
+      document.getElementById('uAccount').children[2].innerText = userAccount;
       document.getElementById('uAccount').removeAttribute('href');
     } else {
       document.getElementById('uAccount').children[0].innerText = 'Cannot connect to MetaMask';
