@@ -6,11 +6,12 @@ var isMetamaskRunning = false;
 var numberOfBets;
 var betAddressInModal; // declared for noting which bet user clicked
 
-const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet, _pricePercentPerThousand, _timestamp, _countArray) => {
+const createBetBox = (_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp, _countArray) => {
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
   newBetBox.removeAttribute('style');
   newBetBox.setAttribute('id', _betAddress);
   newBetBox.children[0].children[0].children[0].children[0].children[1].innerHTML = env.category[_category];
+  newBetBox.children[0].children[0].children[0].children[0].children[3].innerHTML = env.subCategory[_category][_subCategory];
   newBetBox.children[0].children[1].innerHTML = _description;
   newBetBox.children[0].children[3].children[0].children[0].children[0].children[0].children[1].children[0].innerText = _amount / 10**18 + ' ES';
   newBetBox.children[0].children[3].children[0].children[0].children[0].children[1].children[1].children[0].innerText = _minimumBet / 10**18 + ' ES';
@@ -166,6 +167,7 @@ window.addEventListener('load', async () => {
             betAddress,
             await betInstance.methods.description().call(),
             await betInstance.methods.category().call(),
+            await betInstance.methods.subCategory().call(),
             await betdeex.methods.betBalanceInExaEs(betAddress).call(),
             await betInstance.methods.minimumBetInExaEs().call(),
             await betInstance.methods.pricePercentPerThousand().call(),
@@ -192,7 +194,7 @@ window.addEventListener('load', async () => {
     //   events = res;
     // });
 
-    console.log('events', events);
+    // console.log('events', events);
 
     // for(let ev of events) {
     //   // if(ev.returnValues[3] != category) {
@@ -258,6 +260,13 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
     console.log(e.message);
   }
 
+  //to get submit notification
+  const betWold = web3old.eth.contract(betAbi).at(betAddressInModal);
+  betWold.NewBetting().watch((err, res) => {
+    console.log(res);
+    events = res;
+    alert();
+  });
 
   document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
 });
