@@ -8,7 +8,7 @@ var betAddressInModal; // declared for noting which bet user clicked
 var currentCategory, currentSubCategory, displayAllBets = true;
 var esContract, betdeex;
 
-const createBetBox = (_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp, _countArray) => {
+const createBetBox = (_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp) => {
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
   newBetBox.removeAttribute('style');
   newBetBox.setAttribute('id', _betAddress);
