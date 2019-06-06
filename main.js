@@ -406,7 +406,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
   betWold.NewBetting().watch((err, res) => {
     console.log(res);
     events = res;
-    alert();
+    alert('transaction successful');
   });
 
   document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
