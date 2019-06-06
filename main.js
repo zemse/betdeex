@@ -192,7 +192,7 @@ window.addEventListener('load', async () => {
       //   continue;
       // }
       (async() => {
-        const betAddress = ev.returnValues[1];
+        const betAddress = ev.args[1];
         const block = await web3.eth.getBlock(ev.blockNumber);
         //console.log('timestamp', block.timestamp);
         console.log('bet address', betAddress);
