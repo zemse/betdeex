@@ -1,4 +1,3 @@
-var category = 'Cricket';
 var web3old = window.web3;
 var web3;
 var provider;
@@ -41,40 +40,43 @@ const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet
       const yesList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[0].children[1];
       const drawList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[2].children[1];
 
-      const removeChildElements = node => {
-        while (node.firstChild) {
-          node.removeChild(node.firstChild);
-        }
-      }
-      removeChildElements(noList);
-      removeChildElements(yesList);
-      removeChildElements(drawList);
+      const noVolume = await
+      noList.insertAdjacentHTML('beforeend', '<p>' + + '</p>');
 
-      for(let i = 0; i < _countArray[0]; i++) {
-        (async() => {
-          const element = document.createElement('p');
-          const bettor = await betInstance.methods.noBettors(i).call();
-          console.log(bettor);
-          element.innerText = '[' + bettor.bettorAddress + ' betted an amount of ' + ( bettor.betAmountInExaEs / ( 10**18 ) ) + ' ES]';
-          noList.insertAdjacentElement('beforeend', element);
-        })();
-      }
-
-      for(let i = 0; i < _countArray[1]; i++) {
-        (async() => {
-          const element = document.createElement('p');
-          element.innerText = await betInstance.methods.yesBettors(i).call();
-          yesList.insertAdjacentElement('beforeend', element);
-        })();
-      }
-
-      for(let i = 0; i < _countArray[2]; i++) {
-        (async() => {
-          const element = document.createElement('p');
-          element.innerText = await betInstance.methods.drawBettors(i).call();
-          drawList.insertAdjacentElement('beforeend', element);
-        })();
-      }
+      // const removeChildElements = node => {
+      //   while (node.firstChild) {
+      //     node.removeChild(node.firstChild);
+      //   }
+      // }
+      // removeChildElements(noList);
+      // removeChildElements(yesList);
+      // removeChildElements(drawList);
+      //
+      // for(let i = 0; i < _countArray[0]; i++) {
+      //   (async() => {
+      //     const element = document.createElement('p');
+      //     const bettor = await betInstance.methods.noBettors(i).call();
+      //     console.log(bettor);
+      //     element.innerText = '[' + bettor.bettorAddress + ' betted an amount of ' + ( bettor.betAmountInExaEs / ( 10**18 ) ) + ' ES]';
+      //     noList.insertAdjacentElement('beforeend', element);
+      //   })();
+      // }
+      //
+      // for(let i = 0; i < _countArray[1]; i++) {
+      //   (async() => {
+      //     const element = document.createElement('p');
+      //     element.innerText = await betInstance.methods.yesBettors(i).call();
+      //     yesList.insertAdjacentElement('beforeend', element);
+      //   })();
+      // }
+      //
+      // for(let i = 0; i < _countArray[2]; i++) {
+      //   (async() => {
+      //     const element = document.createElement('p');
+      //     element.innerText = await betInstance.methods.drawBettors(i).call();
+      //     drawList.insertAdjacentElement('beforeend', element);
+      //   })();
+      // }
 
 
     }
@@ -105,7 +107,7 @@ window.addEventListener('load', async () => {
   // no metamask using a rinkeby node
   else {
     provider = new Web3.providers.HttpProvider(
-     'https://rinkeby.infura.io/d64e4d75857d4bbe8e196ca93328c4b7'
+     env.infuraUrl
     );
     console.log('Non-Ethereum browser detected. User should consider installing MetaMask!');
   }
@@ -114,8 +116,8 @@ window.addEventListener('load', async () => {
   web3 = new Web3(provider);
   console.log('web3 object created', web3);
   //console.log(esContractAbi);
-  const esContract = new web3.eth.Contract(esContractAbi, '3beb087e33ec0b830325991a32e3f8bb16a51317');
-  const betdeex = new web3.eth.Contract(betdeexAbi, 'adba96fda88b0cbcf11d668ff6f7a29d062ed050');
+  const esContract = new web3.eth.Contract(esContractAbi, env.esContractAddress);
+  const betdeex = new web3.eth.Contract(betdeexAbi, env.betdeexAdress);
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);

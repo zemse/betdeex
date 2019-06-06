@@ -1,0 +1,75 @@
+<p id="adminStatus"></p>
+Description: <input id="description"><br>
+Category:
+<select id="category">
+  <option value="0">Sports</option>
+  <option value="1">Politics</option>
+  <option value="2">Movies</option>
+</select><br>
+MinimumBet:<input id="minimumBet"><br>
+<input type="hidden" id="pricePercentPerThousand" value="998">
+<p id="messageBox"></p>
+<button id="submit">Deploy bet</button>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
+<script src="env.js"></script>
+<script src="abi.js"></script>
+<script>
+  var web3old = window.web3;
+  var web3;
+  var provider;
+  var userAccount;
+  submit.addEventListener('click', async()=> {
+    if (window.ethereum) {
+      try {
+        await ethereum.enable();
+        provider = ethereum;
+        isMetamaskRunning = true;
+      } catch (error) {
+        console.log('user denied metamask access');
+      }
+    }
+    // old version of metamask
+    else if (window.web3) {
+      provider = web3.currentProvider;
+    	console.log('current provider selected');
+      isMetamaskRunning = true;
+    }
+    // no metamask using a rinkeby node
+    else {
+      provider = new Web3.providers.HttpProvider(
+       env.infuraUrl
+      );
+      console.log('Non-Ethereum browser detected. User should consider installing MetaMask!');
+    }
+
+
+    web3 = new Web3(provider);
+    console.log('web3 object created', web3);
+    //console.log(esContractAbi);
+    const esContract = new web3.eth.Contract(esContractAbi, env.esContractAddress);
+
+    const betdeex = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+
+    console.log('esContract object', esContract);
+    console.log('betdeex object', betdeex);
+
+
+    const accounts = await web3.eth.getAccounts();
+    userAccount = accounts[0];
+    console.log('user account addr', userAccount);
+    /* try {
+      await betdeex.methods.createBet(description.value, Number(category.value), Number(minimumBet.value) * (10**18), 998);
+    } catch (e) {
+      console.log(e.message);
+      messageBox.innerText = e.message;
+    } */
+
+    betdeex.createBet(description.value, Number(category.value), Number(minimumBet.value) * (10**18), 998, (err, res) => {
+      if(err) {
+        console.log(err.message);
+      }
+      alert('Transaction sent! Hash of the transaction: '+result);
+    });
+
+  });
+</script>
