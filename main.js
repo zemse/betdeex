@@ -218,7 +218,6 @@ const loadBets = async () => {
             newBetBox.detailListOpen = true;
             newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Hide Bet Details';
             const betInstance = new web3.eth.Contract(betAbi, betAddress);
-            console.log('getting optionsVolume');
             const optionsVolume = [
               await betInstance.methods.totalBetTokensInExaEsByChoice(0).call(),
               await betInstance.methods.totalBetTokensInExaEsByChoice(1).call(),
