@@ -40,7 +40,11 @@ const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet
       const yesList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[0].children[1];
       const drawList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[2].children[1];
 
-      const noVolume = await
+      const optionsVolume = [
+        await betInstance.methods.totalBetTokensInExaEsByChoice(0).call(),
+        await betInstance.methods.totalBetTokensInExaEsByChoice(1).call(),
+        await betInstance.methods.totalBetTokensInExaEsByChoice(2).call()
+      ]
       noList.insertAdjacentHTML('beforeend', '<p>' + + '</p>');
 
       // const removeChildElements = node => {
@@ -165,13 +169,20 @@ window.addEventListener('load', async () => {
     // }
     let events;
 
-    try {
-      events = await betdeex.getPastEvents('NewBetContract', {
-        fromBlock: 1
+    // try {
+    //   events = await betdeex.getPastEvents('NewBetContract', {
+    //     fromBlock: 1
+    //   });
+    // } catch (e) {
+    //   console.log(err.message);
+    // }
+
+    (() => {
+      const betdeex = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+      betdeex.NewBetContract().watch((err, res) => {
+        console.log(res);
       });
-    } catch (e) {
-      console.log(err.message);
-    }
+    })()
 
     console.log('events', events);
 
