@@ -111,7 +111,7 @@ const createEfficientBetBox = (_betAddress) => {
   console.log('creating bet box'+_betAddress);
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
   newBetBox.removeAttribute('style');
-  newBetBox.setAttribute('id', betInstance.address);
+  newBetBox.setAttribute('id', _betAddress);
   return newBetBox;
 }
 //
