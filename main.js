@@ -276,6 +276,13 @@ window.addEventListener('load', async () => {
     const accounts = await web3.eth.getAccounts();
     userAccount = accounts[0];
     console.log('user account addr', userAccount);
+    if(userAccount) {
+      document.getElementById('uAccount').children[0].innerText = 'Connected';
+      document.getElementById('uAccount').children[1].innerText = userAccount;
+      document.getElementById('uAccount').removeAttribute('href');
+    } else {
+      document.getElementById('uAccount').children[0].innerText = 'Cannot connect to MetaMask';
+    }
     try {
       const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
       document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
