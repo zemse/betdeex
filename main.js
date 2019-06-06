@@ -5,6 +5,8 @@ var userAccount;
 var isMetamaskRunning = false;
 var numberOfBets;
 var betAddressInModal; // declared for noting which bet user clicked
+var currentCategory, currentSubCategory, displayAllBets = true;
+var esContract, betdeex;
 
 const createBetBox = (_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp, _countArray) => {
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
@@ -96,6 +98,38 @@ const createBetBox = (_betAddress, _description, _category, _subCategory, _amoun
   return newBetBox;//betlist.appendChild(newBetBox);
 };
 
+const loadBets = async () => {
+  numberOfBets = await betdeex.methods.getNumberOfBets().call();
+  console.log('numberOfBets', numberOfBets);
+
+  document.getElementById('betlist').innerHTML = '';
+
+  for(let i = 0; i < numberOfBets; i++) {
+    (async() => {
+      const betAddress = await betdeex.methods.bets(i).call();
+      console.log(betAddress);
+      const betInstance = new web3.eth.Contract(betAbi, betAddress);
+      const blockNumber = await betInstance.methods.creationBlockNumber().call();
+      const block = await web3.eth.getBlock(blockNumber);
+      const betCategory = await betInstance.methods.category().call();
+      const betSubCategory = await betInstance.methods.subCategory().call();
+      if(displayAllBets || betCategory == currentCategory && betSubCategory == currentSubCategory) betlist.insertAdjacentElement(
+        'beforeend',
+        createBetBox(
+          betAddress,
+          await betInstance.methods.description().call(),
+          betCategory,
+          betSubCategory,
+          await betdeex.methods.betBalanceInExaEs(betAddress).call(),
+          await betInstance.methods.minimumBetInExaEs().call(),
+          await betInstance.methods.pricePercentPerThousand().call(),
+          block.timestamp
+        )
+      );
+    })();
+  }
+};
+
 // multiple/nexted async await are written for efficient utilisation of time.
 window.addEventListener('load', async () => {
   // new version of metamask
@@ -126,8 +160,8 @@ window.addEventListener('load', async () => {
   web3 = new Web3(provider);
   console.log('web3 object created', web3);
   //console.log(esContractAbi);
-  const esContract = new web3.eth.Contract(esContractAbi, env.esContractAddress);
-  const betdeex = new web3.eth.Contract(betdeexAbi, env.betdeexAdress);
+  esContract = new web3.eth.Contract(esContractAbi, env.esContractAddress);
+  betdeex = new web3.eth.Contract(betdeexAbi, env.betdeexAdress);
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
@@ -270,3 +304,17 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
 
   document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
 });
+
+
+const makeMenuItemLive = (_id, _category, _subCategory) => {
+  document.getElementById(_id).addEventListener('click', ()=>{
+    displayAllBets = false;
+    currentCategory = _category;
+    currentSubCategory = _subCategory;
+    console.log('loading the cat-sub cat', _category, _subCategory);
+    loadBets();
+  });
+}
+
+makeMenuItemLive('football', 0, 0);
+makeMenuItemLive('cricket', 0, 1);
