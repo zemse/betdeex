@@ -99,6 +99,38 @@ const createBetBox = (_betAddress, _description, _category, _subCategory, _amoun
   return newBetBox;//betlist.appendChild(newBetBox);
 };
 
+
+
+
+
+
+
+
+const createEfficientBetBox = (_betAddress) => {
+  //(_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp)
+  console.log('creating bet box'+_betAddress);
+  const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
+  newBetBox.removeAttribute('style');
+  newBetBox.setAttribute('id', betInstance.address);
+  return newBetBox;
+}
+//
+//   return newBetBox;//betlist.appendChild(newBetBox);
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const loadBets = async () => {
   numberOfBets = await betdeex.methods.getNumberOfBets().call();
   console.log('numberOfBets', numberOfBets);
@@ -114,19 +146,93 @@ const loadBets = async () => {
       const block = await web3.eth.getBlock(blockNumber);
       const betCategory = await betInstance.methods.category().call();
       const betSubCategory = await betInstance.methods.subCategory().call();
-      if(displayAllBets || betCategory == currentCategory && betSubCategory == currentSubCategory) betlist.insertAdjacentElement(
-        'beforeend',
-        createBetBox(
-          betAddress,
-          await betInstance.methods.description().call(),
-          betCategory,
-          betSubCategory,
-          await betdeex.methods.betBalanceInExaEs(betAddress).call(),
-          await betInstance.methods.minimumBetInExaEs().call(),
-          await betInstance.methods.pricePercentPerThousand().call(),
-          block.timestamp
-        )
-      );
+      if(displayAllBets || betCategory == currentCategory && betSubCategory == currentSubCategory) {
+        betlist.insertAdjacentElement(
+          'beforeend',
+          createEfficientBetBox(
+            betAddress
+            // await betInstance.methods.description().call(),
+            // betCategory,
+            // betSubCategory,
+            // await betdeex.methods.betBalanceInExaEs(betAddress).call(),
+            // await betInstance.methods.minimumBetInExaEs().call(),
+            // await betInstance.methods.pricePercentPerThousand().call(),
+            // block.timestamp
+          )
+        );
+        const newBetBox = document.getElementById(betAddress);
+        newBetBox.children[0].children[0].children[0].children[0].children[1].innerHTML = env.category[betCategory];
+        newBetBox.children[0].children[0].children[0].children[0].children[3].innerHTML = env.subCategory[betCategory][betSubCategory];
+        newBetBox.children[0].children[3].children[0].children[0].children[0].children[3].children[1].innerText = new Date(block.timestamp * 1000).toGMTString();
+        newBetBox.children[0].children[3].children[0].children[0].children[0].children[3].children[2].innerText = new Date(block.timestamp * 1000).toLocaleString() + ' (in your local timezone)';
+
+        let _description;
+        (async() => {
+          _description = await betInstance.methods.description().call();
+          newBetBox.children[0].children[1].innerHTML = _description;
+        })();
+        (async() => {
+          _amount = await betdeex.methods.betBalanceInExaEs(betAddress).call();
+          newBetBox.children[0].children[3].children[0].children[0].children[0].children[0].children[1].children[0].innerText = _amount / 10**18 + ' ES';
+        })();
+        (async() => {
+          const _minimumBet = await betInstance.methods.minimumBetInExaEs().call();
+          newBetBox.children[0].children[3].children[0].children[0].children[0].children[1].children[1].children[0].innerText = _minimumBet / 10**18 + ' ES';
+        })();
+        (async() => {
+          const _pricePercentPerThousand = await betInstance.methods.pricePercentPerThousand().call();
+          newBetBox.children[0].children[3].children[0].children[0].children[0].children[2].children[1].children[0].innerText = (1000 - _pricePercentPerThousand) / 10;
+        })();
+        (async() => {
+
+        })();
+        (async() => {
+
+        })();
+        (async() => {
+
+        })();
+
+        newBetBox.children[0].children[3].children[0].children[0].children[1].addEventListener('click', async () => {
+          //alert(_betAddress);
+          betAddressInModal = betAddress;
+          betmodal.children[0].children[0].children[1].children[0].children[0].children[1].innerText = _description || await betInstance.methods.description().call();
+          betmodal.children[0].children[0].children[1].children[0].children[2].children[0].children[2].children[0].innerHTML = isMetamaskRunning ? 'Metamask found in browser and your account address is: ' + userAccount : 'Please install <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en" target="_blank"><span style="color: #4caf50;">MetaMask</span> </a> chrome extention to place the bet.';
+        });
+
+        newBetBox.detailListOpen = false;
+        newBetBox.children[0].children[4].children[0].children[0].children[0].addEventListener('click', async()=> {
+          const noList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[1].children[1];
+          const yesList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[0].children[1];
+          const drawList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[2].children[1];
+          if(newBetBox.detailListOpen) {
+            newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'none';
+            newBetBox.detailListOpen = false;
+            newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Display Bet Details';
+            noList.innerText = 'Loading...';
+            yesList.innerText = 'Loading...';
+            drawList.innerText = 'Loading...';
+          } else {
+            // open the list and display the users
+            newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'block';
+            newBetBox.detailListOpen = true;
+            newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Hide Bet Details';
+            const betInstance = new web3.eth.Contract(betAbi, _betAddress);
+
+            const optionsVolume = [
+              await betInstance.methods.totalBetTokensInExaEsByChoice(0).call(),
+              await betInstance.methods.totalBetTokensInExaEsByChoice(1).call(),
+              await betInstance.methods.totalBetTokensInExaEsByChoice(2).call()
+            ]
+
+            noList.innerText = optionsVolume[0] + ' ES';
+            yesList.innerText = optionsVolume[0] + ' ES';
+            drawList.innerText = optionsVolume[0] + ' ES';
+          }
+        });
+
+
+      }
     })();
   }
 };
