@@ -291,7 +291,8 @@ window.addEventListener('load', async () => {
 
   })();
 
-  (async () => {
+//  (async () => {
+alert('yea');
     numberOfBets = await betdeex.methods.getNumberOfBets().call();
     console.log('numberOfBets', numberOfBets);
 
@@ -367,7 +368,7 @@ window.addEventListener('load', async () => {
     //   })();
     // }
 
-  })();
+//  })();
 
 
 
