@@ -1406,6 +1406,25 @@ const betAbi = [
 	},
 	{
 		"constant": true,
+		"inputs": [
+			{
+				"name": "_choice",
+				"type": "uint8"
+			}
+		],
+		"name": "getNumberOfChoiceBettors",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [],
 		"name": "betBalanceInExaEs",
 		"outputs": [

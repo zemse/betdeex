@@ -54,14 +54,14 @@
                <ul class="nav navbar-nav navbar-right">
 			       <li class="dropdown">
                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                     <small>Main ES Balance</small><span id="main-es-bal" class="ethvalue pl-5">8</span><br>
-					 <small>BetDeEx Balance</small><span id="betdeex-es-bal" class="ethvalue pl-10">8</span>
+                     <small>Main ES Balance</small><span id="main-es-bal" class="ethvalue pl-5">loading...</span><br>
+					 <small>BetDeEx Balance</small><span id="betdeex-es-bal" class="ethvalue pl-5">loading...</span>
                      </a>
 
                   </li>
 				  <li class="dropdown">
                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                     <small>30 Day P/L</small>  <span class="ethvalue pl-5">8</span> <small class="pl-5">ETH</small><br>
+                     <small>30 Day P/L</small>  <span class="ethvalue pl-5">8</span> <small class="pl-5">ES</small><br>
 					 <small>1 Day P/L</small>  <span class="ethvalue pl-10 ">8</span> <small class="pl-5">ES</small>
                      </a>
 
@@ -337,7 +337,7 @@
                         </li>-->
                      <!-- SPORTS EVENT:2 -->
 
-                     <li class="betboxtheme" style="display:none">
+                     <li id="thebetaddress" class="betboxtheme" style="display: none">
                         <div class="betbox" >
                            <div class="market-basics-styles_MarketBasics__header mb-5">
                               <div class="category-tag-trail-styles_CategoryTagTrail">
@@ -386,6 +386,32 @@
                                  </section>
                               </article>
                            </div>
+
+                           <div class="market-preview-styles_MarketPreview__footer">
+                              <article>
+                                 <section class="market-properties-styles_MarketProperties">
+                                    <p>Display bet details</p>
+                                    <div class="container" style="display:none">
+                                      <div class="row">
+                                        <div class="col-sm-4 border">
+                                          <h6>Yes voters</h6>
+                                          <div></div>
+                                        </div>
+                                        <div class="col-sm-4 border">
+                                          <h6>No voters</h6>
+                                          <div></div>
+                                        </div>
+                                        <div class="col-sm-4 border">
+                                          <h6>Draw voters</h6>
+                                          <div></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                 </section>
+                              </article>
+                           </div>
+
+
                         </div>
                      </li>
 

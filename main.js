@@ -6,9 +6,10 @@ var isMetamaskRunning = false;
 var numberOfBets;
 var betAddressInModal; // declared for noting which bet user clicked
 
-const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet, _pricePercentPerThousand, _timestamp) => {
+const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet, _pricePercentPerThousand, _timestamp, _countArray) => {
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
   newBetBox.removeAttribute('style');
+  newBetBox.setAttribute('id', _betAddress);
   newBetBox.children[0].children[0].children[0].children[0].children[1].innerHTML = _category;
   newBetBox.children[0].children[1].innerHTML = _description;
   newBetBox.children[0].children[3].children[0].children[0].children[0].children[0].children[1].children[0].innerText = _amount / 10**18 + ' ES';
@@ -22,7 +23,63 @@ const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet
     betmodal.children[0].children[0].children[1].children[0].children[0].children[1].innerText = _description;
     betmodal.children[0].children[0].children[1].children[0].children[2].children[0].children[2].children[0].innerHTML = isMetamaskRunning ? 'Metamask found in browser and your account address is: ' + userAccount : 'Please install <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en" target="_blank"><span style="color: #4caf50;">MetaMask</span> </a> chrome extention to place the bet.';
   });
+  newBetBox.detailListOpen = false;
+  newBetBox.children[0].children[4].children[0].children[0].children[0].addEventListener('click', async()=> {
+    if(newBetBox.detailListOpen) {
+      newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'none';
+      newBetBox.detailListOpen = false;
+      newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Display Bet Details';
 
+    } else {
+      // open the list and display the users
+      newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'block';
+      newBetBox.detailListOpen = true;
+      newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Hide Bet Details';
+      const betInstance = new web3.eth.Contract(betAbi, _betAddress);
+      const noList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[1].children[1];
+      const yesList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[0].children[1];
+      const drawList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[2].children[1];
+
+      const removeChildElements = node => {
+        while (node.firstChild) {
+          node.removeChild(node.firstChild);
+        }
+      }
+      removeChildElements(noList);
+      removeChildElements(yesList);
+      removeChildElements(drawList);
+
+      for(let i = 0; i < _countArray[0]; i++) {
+        (async() => {
+          const element = document.createElement('p');
+          const bettor = await betInstance.methods.noBettors(i).call();
+          console.log(bettor);
+          element.innerText = '[' + bettor.bettorAddress + ' betted an amount of ' + ( bettor.betAmountInExaEs / ( 10**18 ) ) + ' ES]';
+          noList.insertAdjacentElement('beforeend', element);
+        })();
+      }
+
+      for(let i = 0; i < _countArray[1]; i++) {
+        (async() => {
+          const element = document.createElement('p');
+          element.innerText = await betInstance.methods.yesBettors(i).call();
+          yesList.insertAdjacentElement('beforeend', element);
+        })();
+      }
+
+      for(let i = 0; i < _countArray[2]; i++) {
+        (async() => {
+          const element = document.createElement('p');
+          element.innerText = await betInstance.methods.drawBettors(i).call();
+          drawList.insertAdjacentElement('beforeend', element);
+        })();
+      }
+
+
+    }
+
+
+  });
   return newBetBox;//betlist.appendChild(newBetBox);
 };
 
@@ -57,7 +114,7 @@ window.addEventListener('load', async () => {
   console.log('web3 object created', web3);
   //console.log(esContractAbi);
   const esContract = new web3.eth.Contract(esContractAbi, '3beb087e33ec0b830325991a32e3f8bb16a51317');
-  const betdeex = new web3.eth.Contract(betdeexAbi, 'c4336494606203e3907539d5b462a5cb7853b3c6');
+  const betdeex = new web3.eth.Contract(betdeexAbi, 'adba96fda88b0cbcf11d668ff6f7a29d062ed050');
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
@@ -134,7 +191,12 @@ window.addEventListener('load', async () => {
             await betdeex.methods.betBalanceInExaEs(betAddress).call(),
             await betInstance.methods.minimumBetInExaEs().call(),
             await betInstance.methods.pricePercentPerThousand().call(),
-            block.timestamp
+            block.timestamp,
+            [
+              await betInstance.methods.getNumberOfChoiceBettors(0).call(),
+              await betInstance.methods.getNumberOfChoiceBettors(1).call(),
+              await betInstance.methods.getNumberOfChoiceBettors(2).call()
+            ]
           )
         );
       })();
