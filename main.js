@@ -218,7 +218,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
   const choice = Number(document.getElementById('modal-option').value);
   const amount = Number(document.getElementById('modal-es-amount').value);
 
-  const betInstance = web3old.eth.Contract(betAbi).at(betAddressInModal);
+  const betInstance = web3old.eth.contract(betAbi).at(betAddressInModal);
 
 
 
