@@ -1,4 +1,5 @@
 var category = 'Cricket';
+var web3old = window.web3;
 var web3;
 var provider;
 var userAccount;
@@ -217,15 +218,21 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
   const choice = Number(document.getElementById('modal-option').value);
   const amount = Number(document.getElementById('modal-es-amount').value);
 
-  const betInstance = new web3.eth.Contract(betAbi, betAddressInModal);
+  const betInstance = new web3old.eth.Contract(betAbi).at(betAddressInModal);
 
 
 
   document.getElementById('modalSubmit').children[1].innerText = 'Please wait..';
 
   try {
-    await betInstance.methods.enterBet(choice, amount * (10**18)).send({ from: userAccount });
-    console.log('Successfully sent bet');
+    // await betInstance.methods.enterBet(choice, amount * (10**18)).send({ from: userAccount });
+    betInstance.enterBet(choice, amount * (10**18), (err, result) => {
+      if(err) {
+        console.log(err.message);
+      }
+      console.log(result);
+    });
+    //console.log('Successfully sent bet');
   } catch (e) {
     console.log(e.message);
   }
