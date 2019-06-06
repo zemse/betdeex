@@ -217,14 +217,14 @@ const loadBets = async () => {
             newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'block';
             newBetBox.detailListOpen = true;
             newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Hide Bet Details';
-            const betInstance = new web3.eth.Contract(betAbi, _betAddress);
-
+            const betInstance = new web3.eth.Contract(betAbi, betAddress);
+            console.log('getting optionsVolume');
             const optionsVolume = [
               await betInstance.methods.totalBetTokensInExaEsByChoice(0).call(),
               await betInstance.methods.totalBetTokensInExaEsByChoice(1).call(),
               await betInstance.methods.totalBetTokensInExaEsByChoice(2).call()
             ]
-
+            console.log(optionsVolume);
             noList.innerText = optionsVolume[0] + ' ES';
             yesList.innerText = optionsVolume[0] + ' ES';
             drawList.innerText = optionsVolume[0] + ' ES';
@@ -295,29 +295,29 @@ window.addEventListener('load', async () => {
   console.log(betdeex);
     numberOfBets = await betdeex.methods.getNumberOfBets().call();
     console.log('numberOfBets', numberOfBets);
-
-    for(let i = 0; i < numberOfBets; i++) {
-      (async() => {
-        const betAddress = await betdeex.methods.bets(i).call();
-        console.log(betAddress);
-        const betInstance = new web3.eth.Contract(betAbi, betAddress);
-        const blockNumber = await betInstance.methods.creationBlockNumber().call();
-        const block = await web3.eth.getBlock(blockNumber);
-        betlist.insertAdjacentElement(
-          'beforeend',
-          createBetBox(
-            betAddress,
-            await betInstance.methods.description().call(),
-            await betInstance.methods.category().call(),
-            await betInstance.methods.subCategory().call(),
-            await betdeex.methods.betBalanceInExaEs(betAddress).call(),
-            await betInstance.methods.minimumBetInExaEs().call(),
-            await betInstance.methods.pricePercentPerThousand().call(),
-            block.timestamp
-          )
-        );
-      })();
-    }
+    loadBets();
+    // for(let i = 0; i < numberOfBets; i++) {
+    //   (async() => {
+    //     const betAddress = await betdeex.methods.bets(i).call();
+    //     console.log(betAddress);
+    //     const betInstance = new web3.eth.Contract(betAbi, betAddress);
+    //     const blockNumber = await betInstance.methods.creationBlockNumber().call();
+    //     const block = await web3.eth.getBlock(blockNumber);
+    //     betlist.insertAdjacentElement(
+    //       'beforeend',
+    //       createBetBox(
+    //         betAddress,
+    //         await betInstance.methods.description().call(),
+    //         await betInstance.methods.category().call(),
+    //         await betInstance.methods.subCategory().call(),
+    //         await betdeex.methods.betBalanceInExaEs(betAddress).call(),
+    //         await betInstance.methods.minimumBetInExaEs().call(),
+    //         await betInstance.methods.pricePercentPerThousand().call(),
+    //         block.timestamp
+    //       )
+    //     );
+    //   })();
+    // }
     //
     // let events;
     //
