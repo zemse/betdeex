@@ -10,7 +10,7 @@ const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
   newBetBox.removeAttribute('style');
   newBetBox.setAttribute('id', _betAddress);
-  newBetBox.children[0].children[0].children[0].children[0].children[1].innerHTML = _category;
+  newBetBox.children[0].children[0].children[0].children[0].children[1].innerHTML = env.category[_category];
   newBetBox.children[0].children[1].innerHTML = _description;
   newBetBox.children[0].children[3].children[0].children[0].children[0].children[0].children[1].children[0].innerText = _amount / 10**18 + ' ES';
   newBetBox.children[0].children[3].children[0].children[0].children[0].children[1].children[1].children[0].innerText = _minimumBet / 10**18 + ' ES';
@@ -25,27 +25,32 @@ const createBetBox = (_betAddress, _description, _category, _amount, _minimumBet
   });
   newBetBox.detailListOpen = false;
   newBetBox.children[0].children[4].children[0].children[0].children[0].addEventListener('click', async()=> {
+    const noList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[1].children[1];
+    const yesList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[0].children[1];
+    const drawList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[2].children[1];
     if(newBetBox.detailListOpen) {
       newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'none';
       newBetBox.detailListOpen = false;
       newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Display Bet Details';
-
+      noList.innerText = 'Loading...';
+      yesList.innerText = 'Loading...';
+      drawList.innerText = 'Loading...';
     } else {
       // open the list and display the users
       newBetBox.children[0].children[4].children[0].children[0].children[1].style.display = 'block';
       newBetBox.detailListOpen = true;
       newBetBox.children[0].children[4].children[0].children[0].children[0].innerText = 'Hide Bet Details';
       const betInstance = new web3.eth.Contract(betAbi, _betAddress);
-      const noList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[1].children[1];
-      const yesList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[0].children[1];
-      const drawList = newBetBox.children[0].children[4].children[0].children[0].children[1].children[0].children[2].children[1];
 
       const optionsVolume = [
         await betInstance.methods.totalBetTokensInExaEsByChoice(0).call(),
         await betInstance.methods.totalBetTokensInExaEsByChoice(1).call(),
         await betInstance.methods.totalBetTokensInExaEsByChoice(2).call()
       ]
-      noList.insertAdjacentHTML('beforeend', '<p>' + + '</p>');
+
+      noList.innerText = optionsVolume[0] + ' ES';
+      yesList.innerText = optionsVolume[0] + ' ES';
+      drawList.innerText = optionsVolume[0] + ' ES';
 
       // const removeChildElements = node => {
       //   while (node.firstChild) {
@@ -139,19 +144,65 @@ window.addEventListener('load', async () => {
 
       console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
     } catch (e) {
-      console.log(e.message);
+      console.log('get accounts error: ',e.message);
     }
 
   })();
 
   (async () => {
-    // numberOfBets = await betdeex.methods.getNumberOfBets().call();
-    // console.log('numberOfBets', numberOfBets);
+    numberOfBets = await betdeex.methods.getNumberOfBets().call();
+    console.log('numberOfBets', numberOfBets);
 
-    // for(let i = 0; i < numberOfBets; i++) {
+    for(let i = 0; i < numberOfBets; i++) {
+      (async() => {
+        const betAddress = await betdeex.methods.bets(i).call();
+        console.log(betAddress);
+        const betInstance = new web3.eth.Contract(betAbi, betAddress);
+        const blockNumber = await betInstance.methods.creationBlockNumber().call();
+        const block = await web3.eth.getBlock(blockNumber);
+        betlist.insertAdjacentElement(
+          'beforeend',
+          createBetBox(
+            betAddress,
+            await betInstance.methods.description().call(),
+            await betInstance.methods.category().call(),
+            await betdeex.methods.betBalanceInExaEs(betAddress).call(),
+            await betInstance.methods.minimumBetInExaEs().call(),
+            await betInstance.methods.pricePercentPerThousand().call(),
+            block.timestamp
+          )
+        );
+      })();
+    }
+    //
+    // let events;
+    //
+    // // try {
+    // //   events = await betdeex.getPastEvents('NewBetContract', {
+    // //     fromBlock: 1
+    // //   });
+    // // } catch (e) {
+    // //   console.log(err.message);
+    // // }
+    //
+    //
+    // const betdeexW = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+    // betdeexW.NewBetContract().get((err, res) => {
+    //   console.log(res);
+    //   events = res;
+    // });
+
+    console.log('events', events);
+
+    // for(let ev of events) {
+    //   // if(ev.returnValues[3] != category) {
+    //   //   continue;
+    //   // }
     //   (async() => {
-    //     const betAddress = await betdeex.methods.bets(i).call();
-    //     console.log(betAddress);
+    //     const betAddress = ev.args[1];
+    //     const block = await web3.eth.getBlock(ev.blockNumber);
+    //     //console.log('timestamp', block.timestamp);
+    //     console.log('bet address', betAddress);
     //     const betInstance = new web3.eth.Contract(betAbi, betAddress);
     //     betlist.insertAdjacentElement(
     //       'beforeend',
@@ -162,59 +213,16 @@ window.addEventListener('load', async () => {
     //         await betdeex.methods.betBalanceInExaEs(betAddress).call(),
     //         await betInstance.methods.minimumBetInExaEs().call(),
     //         await betInstance.methods.pricePercentPerThousand().call(),
-    //         1500000000
+    //         block.timestamp,
+    //         [
+    //           await betInstance.methods.getNumberOfChoiceBettors(0).call(),
+    //           await betInstance.methods.getNumberOfChoiceBettors(1).call(),
+    //           await betInstance.methods.getNumberOfChoiceBettors(2).call()
+    //         ]
     //       )
     //     );
     //   })();
     // }
-    let events;
-
-    // try {
-    //   events = await betdeex.getPastEvents('NewBetContract', {
-    //     fromBlock: 1
-    //   });
-    // } catch (e) {
-    //   console.log(err.message);
-    // }
-
-
-    const betdeexW = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
-    betdeexW.NewBetContract().get((err, res) => {
-      console.log(res);
-      events = res;
-    });
-
-    console.log('events', events);
-
-    for(let ev of events) {
-      // if(ev.returnValues[3] != category) {
-      //   continue;
-      // }
-      (async() => {
-        const betAddress = ev.args[1];
-        const block = await web3.eth.getBlock(ev.blockNumber);
-        //console.log('timestamp', block.timestamp);
-        console.log('bet address', betAddress);
-        const betInstance = new web3.eth.Contract(betAbi, betAddress);
-        betlist.insertAdjacentElement(
-          'beforeend',
-          createBetBox(
-            betAddress,
-            await betInstance.methods.description().call(),
-            await betInstance.methods.category().call(),
-            await betdeex.methods.betBalanceInExaEs(betAddress).call(),
-            await betInstance.methods.minimumBetInExaEs().call(),
-            await betInstance.methods.pricePercentPerThousand().call(),
-            block.timestamp,
-            [
-              await betInstance.methods.getNumberOfChoiceBettors(0).call(),
-              await betInstance.methods.getNumberOfChoiceBettors(1).call(),
-              await betInstance.methods.getNumberOfChoiceBettors(2).call()
-            ]
-          )
-        );
-      })();
-    }
 
   })();
 

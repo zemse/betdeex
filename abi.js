@@ -964,7 +964,150 @@ const esContractAbi = [
 	}
 ];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const betdeexAbi = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_betAmountInExaEs",
+				"type": "uint256"
+			}
+		],
+		"name": "addAmountToBet",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_manager",
+				"type": "address"
+			}
+		],
+		"name": "addManager",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"name": "_betTokensInExaEs",
+				"type": "uint256"
+			}
+		],
+		"name": "collectBettorTokens",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"name": "_category",
+				"type": "uint8"
+			},
+			{
+				"name": "_minimumBet",
+				"type": "uint256"
+			},
+			{
+				"name": "_pricePercent",
+				"type": "uint256"
+			}
+		],
+		"name": "createBet",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"constant": false,
 		"inputs": [
@@ -986,6 +1129,113 @@ const betdeexAbi = [
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_manager",
+				"type": "address"
+			}
+		],
+		"name": "removeManager",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "_tokensInExaEs",
+				"type": "uint256"
+			}
+		],
+		"name": "sendTokensToAddress",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "_esTokenContractAddress",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "_deployer",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_contractAddress",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_category",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"name": "_description",
+				"type": "string"
+			}
+		],
+		"name": "NewBetContract",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "_ender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_contractAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "_result",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"name": "_prizePool",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "_gasFee",
+				"type": "uint256"
+			}
+		],
+		"name": "EndBetContract",
+		"type": "event"
 	},
 	{
 		"constant": true,
@@ -1026,62 +1276,6 @@ const betdeexAbi = [
 		"type": "function"
 	},
 	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"name": "_tokensInExaEs",
-				"type": "uint256"
-			}
-		],
-		"name": "sendTokensToAddress",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_manager",
-				"type": "address"
-			}
-		],
-		"name": "addManager",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_betAmountInExaEs",
-				"type": "uint256"
-			}
-		],
-		"name": "addAmountToBet",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"constant": true,
 		"inputs": [
 			{
@@ -1098,74 +1292,6 @@ const betdeexAbi = [
 		],
 		"payable": false,
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_manager",
-				"type": "address"
-			}
-		],
-		"name": "removeManager",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_from",
-				"type": "address"
-			},
-			{
-				"name": "_betTokensInExaEs",
-				"type": "uint256"
-			}
-		],
-		"name": "collectBettorTokens",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_description",
-				"type": "string"
-			},
-			{
-				"name": "_category",
-				"type": "string"
-			},
-			{
-				"name": "_minimumBet",
-				"type": "uint256"
-			},
-			{
-				"name": "_pricePercent",
-				"type": "uint256"
-			}
-		],
-		"name": "createBet",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1202,10 +1328,124 @@ const betdeexAbi = [
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [],
+		"name": "superManager",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const betAbi = [
+	{
+		"constant": false,
 		"inputs": [
 			{
-				"name": "_esTokenContractAddress",
-				"type": "address"
+				"name": "_choice",
+				"type": "uint8"
+			}
+		],
+		"name": "endBet",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_choice",
+				"type": "uint8"
+			},
+			{
+				"name": "_betTokensInExaEs",
+				"type": "uint256"
+			}
+		],
+		"name": "enterBet",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"name": "_category",
+				"type": "uint8"
+			},
+			{
+				"name": "_minimumBetInExaEs",
+				"type": "uint256"
+			},
+			{
+				"name": "_pricePercentPerThousand",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -1216,64 +1456,85 @@ const betdeexAbi = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"name": "_deployer",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_contractAddress",
+				"indexed": false,
+				"name": "_bettorAddress",
 				"type": "address"
 			},
 			{
 				"indexed": false,
-				"name": "_description",
-				"type": "string"
-			},
-			{
-				"indexed": true,
-				"name": "_category",
-				"type": "string"
-			}
-		],
-		"name": "NewBetContract",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "_ender",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_contractAddress",
-				"type": "address"
+				"name": "_betAmountInExaEs",
+				"type": "uint256"
 			},
 			{
 				"indexed": false,
-				"name": "_result",
+				"name": "_choice",
 				"type": "uint8"
 			},
 			{
 				"indexed": false,
-				"name": "_prizePool",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "_gasFee",
+				"name": "_bettorsIndex",
 				"type": "uint256"
 			}
 		],
-		"name": "EndBetContract",
+		"name": "NewBetting",
 		"type": "event"
-	}
-];
-
-const betAbi = [
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "betBalanceInExaEs",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "category",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "creationBlockNumber",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "description",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
 	{
 		"constant": true,
 		"inputs": [
@@ -1299,6 +1560,67 @@ const betAbi = [
 	},
 	{
 		"constant": true,
+		"inputs": [],
+		"name": "endBlockNumber",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "endedBy",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_choice",
+				"type": "uint8"
+			}
+		],
+		"name": "getNumberOfChoiceBettors",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "minimumBetInExaEs",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [
 			{
 				"name": "",
@@ -1313,6 +1635,20 @@ const betAbi = [
 			},
 			{
 				"name": "betAmountInExaEs",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "pricePercentPerThousand",
+		"outputs": [
+			{
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -1361,190 +1697,5 @@ const betAbi = [
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "minimumBetInExaEs",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "pricePercentPerThousand",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "description",
-		"outputs": [
-			{
-				"name": "",
-				"type": "string"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_choice",
-				"type": "uint8"
-			}
-		],
-		"name": "getNumberOfChoiceBettors",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "betBalanceInExaEs",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_choice",
-				"type": "uint8"
-			},
-			{
-				"name": "_betTokensInExaEs",
-				"type": "uint256"
-			}
-		],
-		"name": "enterBet",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "endedBy",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_choice",
-				"type": "uint8"
-			}
-		],
-		"name": "endBet",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "category",
-		"outputs": [
-			{
-				"name": "",
-				"type": "string"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"name": "_description",
-				"type": "string"
-			},
-			{
-				"name": "_category",
-				"type": "string"
-			},
-			{
-				"name": "_minimumBetInExaEs",
-				"type": "uint256"
-			},
-			{
-				"name": "_pricePercentPerThousand",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "_bettorAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "_betAmountInExaEs",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "_choice",
-				"type": "uint8"
-			},
-			{
-				"indexed": false,
-				"name": "_bettorsIndex",
-				"type": "uint256"
-			}
-		],
-		"name": "NewBetting",
-		"type": "event"
 	}
 ];
