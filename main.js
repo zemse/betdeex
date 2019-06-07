@@ -449,6 +449,7 @@ makeMenuItemLive('cricket', 0, 1);
 // manager
 
 document.getElementById('superManagerPanel').children[2].addEventListener('click',async()=>{
+  document.getElementById('superManagerPanel').children[4].innerText = 'Loading...';
   const userInputAddress = document.getElementById('superManagerPanel').children[1].value;
   const isManager = await betdeex.methods.isManager(userInputAddress).call();
   console.log('isManager view priviliges',isManager);
@@ -459,13 +460,14 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Remove Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to remove manager
+      document.getElementById('superManagerPanel').children[4].innerText = 'Sending transaction...';
       console.log('sending tx to remove manager');
       betdeexW3old.removeManager(userInputAddress, (err, result) => {
         if(err) {
           console.log(err.message);
           document.getElementById('superManagerPanel').children[4].innerText = err.message;
         } else {
-          document.getElementById('superManagerPanel').children[4].innerText = 'Tx hash: ' + result;
+          document.getElementById('superManagerPanel').children[4].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
         }
         console.log(result);
 
@@ -476,13 +478,14 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Add Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to add manager
+      document.getElementById('superManagerPanel').children[4].innerText = 'Sending transaction...';
       console.log('sending tx to remove manager');
       betdeexW3old.addManager(userInputAddress, (err, result) => {
         if(err) {
           console.log(err.message);
           document.getElementById('superManagerPanel').children[4].innerText = err.message;
         } else {
-          document.getElementById('superManagerPanel').children[4].innerText = 'Tx hash: ' + result;
+          document.getElementById('superManagerPanel').children[4].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
         }
         console.log(result);
 
