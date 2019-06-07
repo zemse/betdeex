@@ -108,7 +108,7 @@ var esContract, betdeex, betdeexW3old;
 
 const createEfficientBetBox = (_betAddress) => {
   //(_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp)
-  console.log('creating bet box'+_betAddress);
+  //console.log('displaying bet box'+_betAddress);
   const newBetBox = document.getElementsByClassName('betboxtheme')[0].cloneNode(true);
   newBetBox.removeAttribute('style');
   newBetBox.setAttribute('id', _betAddress);
@@ -140,10 +140,11 @@ const loadBets = async () => {
   for(let i = numberOfBets - 1; i >= 0; i--) {
     (async() => {elementDisplay:{
       const betAddress = await betdeex.methods.bets(i).call();
-      console.log(betAddress);
       const betInstance = new web3.eth.Contract(betAbi, betAddress);
       const endedBy = await betInstance.methods.endedBy().call();
-      if(endedBy) break elementDisplay;
+      //console.log('endedby:',endedBy,endedBy!=0x0);
+      if(endedBy!=0x0) break elementDisplay;
+      console.log('building display for',betAddress);
       const blockNumber = await betInstance.methods.creationBlockNumber().call();
       const block = await web3.eth.getBlock(blockNumber);
       const betCategory = await betInstance.methods.category().call();
@@ -330,9 +331,9 @@ window.addEventListener('load', async () => {
 
 //  (async () => {
   console.log(betdeex);
-    numberOfBets = await betdeex.methods.getNumberOfBets().call();
-    console.log('numberOfBets', numberOfBets);
-    loadBets();
+  // numberOfBets = await betdeex.methods.getNumberOfBets().call();
+  // console.log('numberOfBets', numberOfBets);
+  loadBets();
     // for(let i = 0; i < numberOfBets; i++) {
     //   (async() => {
     //     const betAddress = await betdeex.methods.bets(i).call();
