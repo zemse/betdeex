@@ -444,7 +444,6 @@ makeMenuItemLive('cricket', 0, 1);
 
 document.getElementById('managerPanel').children[4].innerHTML = ''; //empty placeholder options
 for(let categoryId in env.category) {
-  console.log(env.category[categoryId]);
   const optionElement = document.createElement('option');
   optionElement.setAttribute('value', categoryId);
   optionElement.innerText = env.category[categoryId];
