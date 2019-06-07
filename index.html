@@ -56,10 +56,20 @@
                <ul class="nav navbar-nav navbar-right">
 			       <li class="dropdown">
                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                     <small>Main ES Balance</small><span id="main-es-bal" class="ethvalue pl-5">loading...</span><br>
-					 <small>BetDeEx Balance</small><span id="betdeex-es-bal" class="ethvalue pl-5">loading...</span>
+                       <small>Main ES Balance</small><span id="main-es-bal" class="ethvalue pl-5">loading...</span><br>
+					             <small>BetDeEx Balance</small><span id="betdeex-es-bal" class="ethvalue pl-5">loading...</span><span id="betdeex-recharge" class="ethvalue pl-5" style="text-decoration:underline;display:none">Recharge your BetDeEx</span>
                      </a>
-
+                     <ul class="dropdown-menu" id="betdeex-recharge-box" style="display: none">
+                        <li>
+                           <a href="#">
+                              <div class="topmenublock">
+                                <small>Add ES to BetDeEx account from your ES Balance</small><br>
+                                <input placeholder="Enter ES amount" /><br>
+                                <button>Add ES</button>
+                              </div>
+                           </a>
+                        </li>
+                     </ul>
                   </li>
 				  <!-- <li class="dropdown">
                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -97,15 +107,7 @@
                      <small>Gas Price (GWEI)</small><br>
                      5.6(Standard) <span class=""><u>Edit</u></span>
                      </a>
-                     <ul class="dropdown-menu">
-                        <li>
-                           <a href="#">
-                              <div class="topmenublock">
-                                 <div class="topmenublock-firhead">No Notification</div>
-                              </div>
-                           </a>
-                        </li>
-                     </ul>
+
                   </li>-->
                   <li class="dropdown">
                      <a id="uAccount" href="https://metamask.io/" target="_blank">

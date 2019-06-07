@@ -322,6 +322,9 @@ window.addEventListener('load', async () => {
       const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
       document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) ) + ' ES';
 
+      document.getElementById('betdeex-recharge').style.display = 'inline';
+      document.getElementById('betdeex-recharge-box').style.display = 'block';
+
       console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
     } catch (e) {
       console.log('get accounts error: ',e.message);
@@ -548,5 +551,26 @@ document.getElementById('managerPanel').children[12].addEventListener('click', a
     }
     console.log(result);
 
+  });
+});
+
+
+
+
+
+document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].addEventListener('click', async()=>{
+  const esW3old = web3old.eth.contract(esContractAbi).at(env.esContractAddress);
+  const amount = document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[1].value;
+  console.log('attempting to add balance to BetDeEx', amount);
+  document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].innerText = 'Signing tx...';
+  esW3old.approve(betdeexAdress, amount, (err, result) => {
+    if(err) {
+      console.log(err.message);
+      document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerText = err.message;
+    } else {
+      document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[1].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
+    }
+    console.log(result);
+    document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].innerText = 'Add ES again';
   });
 });
