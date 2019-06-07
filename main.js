@@ -220,7 +220,23 @@ const loadBets = async () => {
             drawList.innerText = ( optionsVolume[2] / 10**18 ) + ' ES';
           }
         });
-
+        document.getElementById('endBetDiv').lastElementChild.addEventListener('click', async()=>{
+          document.getElementById('endBetDiv').lastElementChild.innerText = 'Ending bet...';
+          document.getElementById('endBetDiv').children[2] = 'Signing transaction and sending...';
+          const contractAddress = newBetBox.getAttribute('id');
+          const choice = document.getElementById('endBetDiv').firstChild.value;
+          const betW3old = web3old.eth.contract(betAbi).at(contractAddress);
+          betW3old.endBet(choice, (err, res)=>{
+            if(err) {
+              console.log(err.message);
+            } else {
+              document.getElementById('endBetDiv').lastElementChild.innerText = 'Ended bet';
+              document.getElementById('endBetDiv').lastElementChild.setAttribute('disabled', true);
+            }
+            console.log(result);
+            document.getElementById('endBetDiv').children[2] = result;
+          });
+        });
 
       }
     })();
@@ -278,6 +294,7 @@ window.addEventListener('load', async () => {
         console.log('isManager:', isManager);
         if(isManager) {
           document.getElementById('managerPanel').style.display = 'block';
+          document.getElementById('endBetButton').style.display = 'block';
         }
       })();
       (async()=>{

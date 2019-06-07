@@ -15,7 +15,11 @@ var env = {
     'Users Choice'
   ],
   subCategory: [
-    ['Football', 'Cricket']
+    ['Football', 'Cricket'],
+    ['Good Politics', 'Dirty Politics'],
+    ['English', 'Hindi', 'Marathi'],
+    ['Computers', 'Electronics', 'Mechanical'],
+    ['Physics', 'Chemistry', 'Biology']
   ]
 
 };
