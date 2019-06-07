@@ -6,7 +6,7 @@ var isMetamaskRunning = false;
 var numberOfBets;
 var betAddressInModal; // declared for noting which bet user clicked
 var currentCategory, currentSubCategory, displayAllBets = true;
-var esContract, betdeex;
+var esContract, betdeex, betdeexW3old;
 
 // const createBetBox = (_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp) => {
 //   console.log('creating bet box'+_betAddress);
@@ -259,9 +259,11 @@ window.addEventListener('load', async () => {
   //console.log(esContractAbi);
   esContract = new web3.eth.Contract(esContractAbi, env.esContractAddress);
   betdeex = new web3.eth.Contract(betdeexAbi, env.betdeexAdress);
+  betdeexW3old = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
+  console.log('betdeexW3old object', betdeexW3old);
 
   (async () => {
     const accounts = await web3.eth.getAccounts();
@@ -454,7 +456,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
   const isManager = await betdeex.methods.isManager(userInputAddress).call();
   console.log('isManager view priviliges',isManager);
 
-  const betdeexW3old = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+  //var betdeexW3old = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
   if(isManager) {
     document.getElementById('superManagerPanel').children[4].innerText = 'Yes, ' + userInputAddress + 'has manager previliges of BetDeEx Smart Contract';
     document.getElementById('superManagerPanel').children[6].innerText = 'Remove Manager';
@@ -492,5 +494,16 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
       });
     });
   }
+
+});
+
+
+
+
+document.getElementById('managerPanel').children[11].addEventListener('click', async()=>{
+  const description = document.getElementById('managerPanel').children[1];
+  const category = Number(document.getElementById('managerPanel').children[4]);
+  const subCategory = Number(document.getElementById('managerPanel').children[7]);
+  const minimumBet = Number(document.getElementById('managerPanel').children[11]) * 10**18;
 
 });
