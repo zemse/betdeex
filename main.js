@@ -259,7 +259,7 @@ window.addEventListener('load', async () => {
   //console.log(esContractAbi);
   esContract = new web3.eth.Contract(esContractAbi, env.esContractAddress);
   betdeex = new web3.eth.Contract(betdeexAbi, env.betdeexAdress);
-  betdeexW3old = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+  if(web3old) betdeexW3old = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
 
   console.log('esContract object', esContract);
   console.log('betdeex object', betdeex);
@@ -442,6 +442,15 @@ const makeMenuItemLive = (_id, _category, _subCategory) => {
 makeMenuItemLive('football', 0, 0);
 makeMenuItemLive('cricket', 0, 1);
 
+
+for(let categoryId in env.category) {
+  console.log(env.category[categoryId]);
+  const optionElement = document.createElement('option');
+  optionElement.setAttribute('value', categoryId);
+  optionElement.innerText = env.category[categoryId];
+  document.getElementById('managerPanel').children[4].innerHTML = '';
+  document.getElementById('managerPanel').children[4].insertAdjacentElement('beforeend',optionElement);
+}
 
 
 
