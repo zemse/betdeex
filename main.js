@@ -227,6 +227,7 @@ const loadBets = async () => {
           const contractAddress = newBetBox.getAttribute('id');
           const choice = endBetDiv.firstChild.value;
           const betW3old = web3old.eth.contract(betAbi).at(contractAddress);
+          console.log('preparing to end bet',contractAddress,choice);
           betW3old.endBet(choice, (err, res)=>{
             if(err) {
               console.log(err.message);
