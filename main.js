@@ -274,12 +274,14 @@ window.addEventListener('load', async () => {
       (async()=>{
         const isManager = await betdeex.methods.isManager(userAccount).call();
         console.log('isManager:', isManager);
+        document.getElementById('managerPanel').style.display = 'block';
       })();
       (async()=>{
         const superAddress = await betdeex.methods.superManager().call();
         console.log('superAddress: ', superAddress);
         if(userAccount === superAddress) {
           console.log('this is a super account!');
+          document.getElementById('superManagerPanel').style.display = 'block';
         }
       })();
     } else {
