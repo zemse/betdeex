@@ -570,7 +570,7 @@ document.getElementById('betdeex-recharge-box').children[0].children[0].children
       console.log(err.message);
       document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerText = err.message;
     } else {
-      document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
+      document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerHTML = 'Tx hash: ' + result + '. <br>Please try view previliges after 15 secs';
     }
     console.log(result);
     document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[4].innerText = 'Add ES again';
