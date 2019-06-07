@@ -231,7 +231,7 @@ const loadBets = async () => {
           const choice = endBetDiv.firstElementChild.value;
           const betW3old = web3old.eth.contract(betAbi).at(contractAddress);
           console.log('preparing to end bet',contractAddress,choice);
-          betW3old.endBet(choice, (err, res)=>{
+          betW3old.endBet(choice, (err, result)=>{
             if(err) {
               console.log(err.message);
             } else {
@@ -239,7 +239,7 @@ const loadBets = async () => {
               endBetDiv.lastElementChild.setAttribute('disabled', true);
             }
             console.log(result);
-            endBetDiv.children[2] = result;
+            endBetDiv.children[2].innerText = result;
           });
         });
 
