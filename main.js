@@ -561,7 +561,7 @@ document.getElementById('managerPanel').children[12].addEventListener('click', a
 document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].addEventListener('click', async()=>{
   const esW3old = web3old.eth.contract(esContractAbi).at(env.esContractAddress);
   const amount = document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[1].value;
-  console.log('attempting to add balance to BetDeEx', amount);
+  console.log('attempting to add balance to BetDeEx', amount, env.betdeexAddress);
   document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].innerText = 'Signing tx...';
   esW3old.approve(env.betdeexAddress, amount, (err, result) => {
     if(err) {
