@@ -234,7 +234,7 @@ const loadBets = async () => {
             if(err) {
               console.log(err.message);
             } else {
-              endBetDiv.lastElementChild.innerText = 'Ended bet';
+              endBetDiv.lastElementChild.innerText = 'endBet tx sent';
               endBetDiv.lastElementChild.setAttribute('disabled', true);
             }
             console.log(result);
