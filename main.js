@@ -294,7 +294,7 @@ window.addEventListener('load', async () => {
         console.log('isManager:', isManager);
         if(isManager) {
           document.getElementById('managerPanel').style.display = 'block';
-          document.getElementById('endBetButton').style.display = 'block';
+          document.getElementById('endBetDiv').style.display = 'block';
         }
       })();
       (async()=>{
@@ -525,12 +525,13 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
 
 
 document.getElementById('managerPanel').children[12].addEventListener('click', async()=>{
-  const description = document.getElementById('managerPanel').children[1];
-  const category = Number(document.getElementById('managerPanel').children[4]);
-  const subCategory = Number(document.getElementById('managerPanel').children[7]);
-  const minimumBet = Number(document.getElementById('managerPanel').children[11]) * 10**18;
+  const description = document.getElementById('managerPanel').children[1].value;
+  const category = Number(document.getElementById('managerPanel').children[4].value);
+  const subCategory = Number(document.getElementById('managerPanel').children[7].value);
+  const minimumBet = Number(document.getElementById('managerPanel').children[11].value) * 10**18;
 
   document.getElementById('managerPanel').children[11].innerText = 'Signing transaction and sending...';
+  console.log(description,category,subCategory,minimumBet,998);
   betdeexW3old.createBet(description, category, subCategory, minimumBet, 998, (err, result) => {
     if(err) {
       console.log(err.message);
