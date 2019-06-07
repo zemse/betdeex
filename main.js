@@ -451,7 +451,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
     console.log(res);
     events = res;
     const accounts = await web3.eth.getAccounts();
-    console.log('Bet placed', accounts[0] == res.args._bettorAddress);
+    console.log('Bet placed', accounts[0], res.args._bettorAddress);
     if(accounts[0] == res.args._bettorAddress) {
       alert('Bet Placed successfully!');
       document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
