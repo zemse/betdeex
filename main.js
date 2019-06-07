@@ -514,7 +514,7 @@ document.getElementById('managerPanel').children[12].addEventListener('click', a
   const minimumBet = Number(document.getElementById('managerPanel').children[11]) * 10**18;
 
   document.getElementById('managerPanel').children[11].innerText = 'Signing transaction and sending...';
-  betdeexW3old.createBet(description, category, subCategory, minimumBet, (err, result) => {
+  betdeexW3old.createBet(description, category, subCategory, minimumBet, 998 (err, result) => {
     if(err) {
       console.log(err.message);
       document.getElementById('managerPanel').children[11].innerText = err.message;
