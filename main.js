@@ -563,7 +563,7 @@ document.getElementById('betdeex-recharge-box').children[0].children[0].children
   const amount = document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[1].value;
   console.log('attempting to add balance to BetDeEx', amount);
   document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].innerText = 'Signing tx...';
-  esW3old.approve(env.betdeexAdress, amount, (err, result) => {
+  esW3old.approve(env.betdeexAddress, amount, (err, result) => {
     if(err) {
       console.log(err.message);
       document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerText = err.message;
