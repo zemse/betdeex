@@ -138,10 +138,12 @@ const loadBets = async () => {
   document.getElementById('betlist').innerHTML = '';
 
   for(let i = numberOfBets - 1; i >= 0; i--) {
-    (async() => {
+    (async() => {elementDisplay:{
       const betAddress = await betdeex.methods.bets(i).call();
       console.log(betAddress);
       const betInstance = new web3.eth.Contract(betAbi, betAddress);
+      const endedBy = await betInstance.methods.endedBy().call();
+      if(endedBy) break elementDisplay;
       const blockNumber = await betInstance.methods.creationBlockNumber().call();
       const block = await web3.eth.getBlock(blockNumber);
       const betCategory = await betInstance.methods.category().call();
@@ -241,7 +243,7 @@ const loadBets = async () => {
         });
 
       }
-    })();
+    }})();
   }
 };
 
