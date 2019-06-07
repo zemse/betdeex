@@ -447,11 +447,16 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
 
   //to get submit notification
   const betWold = web3old.eth.contract(betAbi).at(betAddressInModal);
-  betWold.NewBetting().watch((err, res) => {
+  betWold.NewBetting().watch(async (err, res) => {
     console.log(res);
     events = res;
-    alert('Transaction is successful!');
-    document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
+    const accounts = await web3.eth.getAccounts();
+    console.log('Bet placed', accounts[0] == res.args._bettorAddress);
+    if(accounts[0] == res.args._bettorAddress) {
+      alert('Bet Placed successfully!');
+      document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
+      loadBets();
+    }
   });
 });
 
