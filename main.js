@@ -531,7 +531,7 @@ document.getElementById('managerPanel').children[12].addEventListener('click', a
   const description = document.getElementById('managerPanel').children[1].value;
   const category = Number(document.getElementById('managerPanel').children[4].value);
   const subCategory = Number(document.getElementById('managerPanel').children[7].value);
-  const minimumBet = Number(document.getElementById('managerPanel').children[11].value) * 10**18;
+  const minimumBet = Number(document.getElementById('managerPanel').children[9].value) * 10**18;
 
   document.getElementById('managerPanel').children[11].innerText = 'Signing transaction and sending...';
   console.log(description,category,subCategory,minimumBet,998);
