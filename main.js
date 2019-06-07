@@ -137,7 +137,7 @@ const loadBets = async () => {
 
   document.getElementById('betlist').innerHTML = '';
 
-  for(let i = 0; i < numberOfBets; i++) {
+  for(let i = numberOfBets - 1; i >= 0; i--) {
     (async() => {
       const betAddress = await betdeex.methods.bets(i).call();
       console.log(betAddress);
