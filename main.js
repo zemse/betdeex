@@ -459,7 +459,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Remove Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to remove manager
-      betdeexW3old.addManager(userInputAddress, (err, result) => {
+      betdeexW3old.removeManager(userInputAddress, (err, result) => {
         if(err) {
           console.log(err.message);
           document.getElementById('superManagerPanel').children[4].innerText = err.message;
@@ -475,6 +475,16 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Add Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to add manager
+      betdeexW3old.addManager(userInputAddress, (err, result) => {
+        if(err) {
+          console.log(err.message);
+          document.getElementById('superManagerPanel').children[4].innerText = err.message;
+        } else {
+          document.getElementById('superManagerPanel').children[4].innerText = result;
+        }
+        console.log(result);
+
+      });
     });
   }
 
