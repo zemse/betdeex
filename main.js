@@ -560,17 +560,17 @@ document.getElementById('managerPanel').children[12].addEventListener('click', a
 
 document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].addEventListener('click', async()=>{
   const esW3old = web3old.eth.contract(esContractAbi).at(env.esContractAddress);
-  const amount = document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[1].value;
-  console.log('attempting to add balance to BetDeEx', amount, env.betdeexAddress);
-  document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].innerText = 'Signing tx...';
-  esW3old.approve(env.betdeexAddress, amount, (err, result) => {
+  const amount = document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].value;
+  console.log('attempting to add balance to BetDeEx', amount, env.betdeexAdress);
+  document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[4].innerText = 'Signing tx...';
+  esW3old.approve(env.betdeexAdress, amount, (err, result) => {
     if(err) {
       console.log(err.message);
       document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerText = err.message;
     } else {
-      document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[1].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
+      document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[0].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
     }
     console.log(result);
-    document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[2].innerText = 'Add ES again';
+    document.getElementById('betdeex-recharge-box').children[0].children[0].children[0].children[4].innerText = 'Add ES again';
   });
 });
