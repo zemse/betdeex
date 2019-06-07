@@ -462,7 +462,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Remove Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to remove manager
-      document.getElementById('superManagerPanel').children[4].innerText = 'Sending transaction...';
+      document.getElementById('superManagerPanel').children[4].innerText = 'Signing transaction and sending...';
       console.log('sending tx to remove manager');
       betdeexW3old.removeManager(userInputAddress, (err, result) => {
         if(err) {
@@ -480,7 +480,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Add Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to add manager
-      document.getElementById('superManagerPanel').children[4].innerText = 'Sending transaction...';
+      document.getElementById('superManagerPanel').children[4].innerText = 'Signing transaction and sending...';
       console.log('sending tx to remove manager');
       betdeexW3old.addManager(userInputAddress, (err, result) => {
         if(err) {
@@ -500,10 +500,21 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
 
 
 
-document.getElementById('managerPanel').children[11].addEventListener('click', async()=>{
+document.getElementById('managerPanel').children[12].addEventListener('click', async()=>{
   const description = document.getElementById('managerPanel').children[1];
   const category = Number(document.getElementById('managerPanel').children[4]);
   const subCategory = Number(document.getElementById('managerPanel').children[7]);
   const minimumBet = Number(document.getElementById('managerPanel').children[11]) * 10**18;
 
+  document.getElementById('managerPanel').children[11].innerText = 'Signing transaction and sending...';
+  betdeexW3old.createBet(description, category, subCategory, minimumBet, (err, result) => {
+    if(err) {
+      console.log(err.message);
+      document.getElementById('managerPanel').children[11].innerText = err.message;
+    } else {
+      document.getElementById('managerPanel').children[11].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
+    }
+    console.log(result);
+
+  });
 });
