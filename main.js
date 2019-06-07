@@ -454,7 +454,14 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
     console.log('Bet placed', accounts[0], res.args._bettorAddress);
     if(accounts[0].toLowerCase() == res.args._bettorAddress) {
       document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
+
       loadBets();
+
+      const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
+      document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
+
+      const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
+      document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) ) + ' ES';
       alert('Bet Placed successfully!');
     }
   });
