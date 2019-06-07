@@ -291,7 +291,7 @@ window.addEventListener('load', async () => {
     userAccount = accounts[0];
     console.log('user account addr', userAccount);
     if(userAccount) {
-      document.getElementById('uAccount').children[0].innerText = 'Connected to your account on Blockchain';
+      document.getElementById('uAccount').children[0].innerText = 'Connected to ES account on Blockchain';
       document.getElementById('uAccount').children[2].innerText = userAccount;
       document.getElementById('uAccount').removeAttribute('href');
       (async()=>{
