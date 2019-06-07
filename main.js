@@ -423,6 +423,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
 });
 
 
+
 const makeMenuItemLive = (_id, _category, _subCategory) => {
   document.getElementById(_id).addEventListener('click', ()=>{
     displayAllBets = false;
@@ -436,3 +437,19 @@ const makeMenuItemLive = (_id, _category, _subCategory) => {
 
 makeMenuItemLive('football', 0, 0);
 makeMenuItemLive('cricket', 0, 1);
+
+
+
+
+
+
+
+// manager
+
+document.getElementById('superManagerPanel').children[1].addEventListener('onkeydown',async()=>{
+  const userInputAddress = document.getElementById('superManagerPanel').children[1].value;
+  const isManager = await betdeex.methods.isManager(userInputAddress);
+
+  document.getElementById('superManagerPanel').children[3].innerText = userInputAddress + (isManager?' has':' does not have') + ' manager previliges of BetDeEx Smart Contract';
+
+});
