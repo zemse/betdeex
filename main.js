@@ -271,6 +271,17 @@ window.addEventListener('load', async () => {
       document.getElementById('uAccount').children[0].innerText = 'Connected';
       document.getElementById('uAccount').children[2].innerText = userAccount;
       document.getElementById('uAccount').removeAttribute('href');
+      (async()=>{
+        const isManager = await betdeex.methods.isManager(userAccount).call();
+        console.log('isManager:', isManager);
+      })();
+      (async()=>{
+        const superAddress = await betdeex.methods.superManager().call();
+        console.log('superAddress: ', superAddress);
+        if(userAccount === superAddress) {
+          console.log('this is a super account!');
+        }
+      })();
     } else {
       document.getElementById('uAccount').children[0].innerText = 'Cannot connect to MetaMask';
     }
