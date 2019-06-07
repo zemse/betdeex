@@ -239,7 +239,7 @@ const loadBets = async () => {
               endBetDiv.lastElementChild.setAttribute('disabled', true);
             }
             console.log(result);
-            endBetDiv.children[2].innerText = result;
+            endBetDiv.children[2].innerText = 'Tx hash: ' + result;
           });
         });
 
