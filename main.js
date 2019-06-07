@@ -448,10 +448,34 @@ makeMenuItemLive('cricket', 0, 1);
 
 // manager
 
-document.getElementById('superManagerPanel').children[1].addEventListener('onkeydown',async()=>{
+document.getElementById('superManagerPanel').children[2].addEventListener('click',async()=>{
   const userInputAddress = document.getElementById('superManagerPanel').children[1].value;
-  const isManager = await betdeex.methods.isManager(userInputAddress);
+  const isManager = await betdeex.methods.isManager(userInputAddress).call();
+  console.log('isManager view priviliges',isManager);
 
-  document.getElementById('superManagerPanel').children[3].innerText = userInputAddress + (isManager?' has':' does not have') + ' manager previliges of BetDeEx Smart Contract';
+  const betdeexW3old = web3old.eth.contract(betdeexAbi).at(env.betdeexAdress);
+  if(isManager) {
+    document.getElementById('superManagerPanel').children[4].innerText = 'Yes, ' + userInputAddress + 'has manager previliges of BetDeEx Smart Contract';
+    document.getElementById('superManagerPanel').children[6].innerText = 'Remove Manager';
+    document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
+      //send transaction to remove manager
+      betdeexW3old.addManager(userInputAddress, (err, result) => {
+        if(err) {
+          console.log(err.message);
+          document.getElementById('superManagerPanel').children[4].innerText = err.message;
+        } else {
+          document.getElementById('superManagerPanel').children[4].innerText = result;
+        }
+        console.log(result);
+
+      });
+    });
+  } else {
+    document.getElementById('superManagerPanel').children[4].innerText = 'No, ' + userInputAddress + ' does not have manager previliges of BetDeEx Smart Contract';
+    document.getElementById('superManagerPanel').children[6].innerText = 'Add Manager';
+    document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
+      //send transaction to add manager
+    });
+  }
 
 });
