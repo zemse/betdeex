@@ -459,6 +459,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Remove Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to remove manager
+      console.log('sending tx to remove manager');
       betdeexW3old.removeManager(userInputAddress, (err, result) => {
         if(err) {
           console.log(err.message);
@@ -475,6 +476,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
     document.getElementById('superManagerPanel').children[6].innerText = 'Add Manager';
     document.getElementById('superManagerPanel').children[6].addEventListener('click', async()=>{
       //send transaction to add manager
+      console.log('sending tx to remove manager');
       betdeexW3old.addManager(userInputAddress, (err, result) => {
         if(err) {
           console.log(err.message);
