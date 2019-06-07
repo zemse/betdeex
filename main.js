@@ -464,7 +464,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
           console.log(err.message);
           document.getElementById('superManagerPanel').children[4].innerText = err.message;
         } else {
-          document.getElementById('superManagerPanel').children[4].innerText = result;
+          document.getElementById('superManagerPanel').children[4].innerText = 'Tx hash: ' + result;
         }
         console.log(result);
 
@@ -480,7 +480,7 @@ document.getElementById('superManagerPanel').children[2].addEventListener('click
           console.log(err.message);
           document.getElementById('superManagerPanel').children[4].innerText = err.message;
         } else {
-          document.getElementById('superManagerPanel').children[4].innerText = result;
+          document.getElementById('superManagerPanel').children[4].innerText = 'Tx hash: ' + result;
         }
         console.log(result);
 
