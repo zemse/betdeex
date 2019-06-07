@@ -297,10 +297,7 @@ window.addEventListener('load', async () => {
           document.getElementById('managerPanel').style.display = 'block';
           //document.getElementById('endBetDiv').style.display = 'block';
           var cssRuleCode = document.all ? 'rules' : 'cssRules'; //account for IE and FF
-          var rule = document.styleSheets[styleIndex][cssRuleCode][ruleIndex];
-          var selector = rule.selectorText;  //maybe '#tId'
-          var value = rule.value;
-          document.styleSheets[7]['cssRules'][1].style.display = 'block';
+          document.styleSheets[7][cssRuleCode][1].style.display = 'block';
         }
       })();
       (async()=>{
