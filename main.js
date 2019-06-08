@@ -469,7 +469,7 @@ window.addEventListener('load', async () => {
         document.getElementById('betdeex-recharge').style.display = 'inline';
         //document.getElementById('betdeex-recharge-box').style.display = 'block';
 
-        console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
+        //console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
       } catch (e) {
         console.log('get accounts error: ',e.message);
         const node = document.getElementById('betdeex-recharge-box');
