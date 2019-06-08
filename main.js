@@ -662,13 +662,14 @@ for(let categoryId in env.category) {
   document.getElementById('managerPanel').children[4].insertAdjacentElement('beforeend',optionElement);
 }
 
-document.getElementById('managerPanel').children[4].addEventListener('onchange',()=>{
-  const newBetCategory = document.getElementById('managerPanel').children[4];
-  for(let categoryId in env.subCategory[newBetCategory]) {
+document.getElementById('managerPanel').children[4].addEventListener('change',()=>{
+  const newBetCategory = document.getElementById('managerPanel').children[4].value;
+  document.getElementById('managerPanel').children[7].innerHTML = '';
+  for(let subCategoryId in env.subCategory[newBetCategory]) {
+    console.log(subCategoryId);
     const optionElement = document.createElement('option');
-    optionElement.setAttribute('value', categoryId);
-    optionElement.innerText = env.category[categoryId];
-    document.getElementById('managerPanel').children[7].innerHTML = '';
+    optionElement.setAttribute('value', subCategoryId);
+    optionElement.innerText = env.subCategory[newBetCategory][subCategoryId];
     document.getElementById('managerPanel').children[7].insertAdjacentElement('beforeend',optionElement);
   }
 });
