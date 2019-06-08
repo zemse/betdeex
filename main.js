@@ -426,6 +426,9 @@ window.addEventListener('load', async () => {
           updateUserBalance();
         }
       },500);
+      setInterval(async()=>{
+        updateUserBalance();
+      },4000);
       updateManagerPanel = async()=>{
         const isManager = await betdeex.methods.isManager(userAccount).call();
         console.log('isManager:', isManager);
