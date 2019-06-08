@@ -614,16 +614,19 @@ document.getElementById('viewAll').addEventListener('click', ()=>{
 
 for(let i = 0; i < env.category.length; i++) {
   const li = document.getElementById('c'+i);
-  li.insertAdjacentElement('beforeend',document.createElement(ul));
+  li.insertAdjacentElement('beforeend',document.createElement('ul'));
   const ul = li.children[1];
   ul.setAttribute('class', 'dropdown-menu dropdown-inner');
   ul.setAttribute('role', 'menu');
-  for(let j = 0; i < env.subCategory[i].length; j++) {
-    const childLi = document.createElement(li);
+  for(let j = 0; j < env.subCategory[i].length; j++) {
+    const childLi = document.createElement('li');
     childLi.setAttribute('id', 'c'+i+'s'+j);
+    childLi.innerHTML = '<a>'+env.subCategory[i][j]+'</a>';
+    ul.insertAdjacentElement('beforeend',childLi);
     makeMenuItemLive('c'+i+'s'+j, i, j);
   }
 }
+
 
 makeMenuItemLive('c0s0', 0, 0);
 makeMenuItemLive('c0s1', 0, 1);

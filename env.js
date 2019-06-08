@@ -19,7 +19,12 @@ var env = {
     ['Good Politics', 'Dirty Politics'],
     ['English', 'Hindi', 'Marathi'],
     ['Computers', 'Electronics', 'Mechanical'],
-    ['Physics', 'Chemistry', 'Biology']
+    ['Physics', 'Chemistry', 'Biology'],
+    ['Traveling','TV'],
+    ['Actors', 'Actresses', 'Singers'],
+    ['News', 'Issues'],
+    ['Problems', 'Good things'],
+    ['Career', 'Life Partner']
   ]
 
 };
