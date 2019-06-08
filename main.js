@@ -471,7 +471,7 @@ window.addEventListener('load', async () => {
         const node = document.getElementById('betdeex-recharge-box');
         node.parentNode.removeChild(node);
       }
-    }
+    }; updateUserBalance();
   })();
 
 //  (async () => {
