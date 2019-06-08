@@ -639,6 +639,7 @@ for(let categoryId in env.category) {
   document.getElementById('managerPanel').children[4].insertAdjacentElement('beforeend',optionElement);
 }
 
+//document.
 
 
 
