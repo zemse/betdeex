@@ -248,6 +248,114 @@ const loadBets = async () => {
   }
 };
 
+
+
+
+
+
+const createResultTd = async(betAddress) => {
+  const tdTemplate = tableElement.children[0].lastElementChild.cloneNode(true);
+  tdTemplate.setAttribute('id', 'result'+betAddress);
+  return tdTemplate;
+}
+
+
+
+
+const loadResults = async () => {
+  numberOfBets = await betdeex.methods.getNumberOfBets().call();
+  console.log('numberOfBets', numberOfBets);
+
+  const tableElement = document.getElementById('results-table').firstElementChild.firstElementChild.firstElementChild.children[1];
+  tableElement.children[1].innerHTML = '';
+
+  for(let i = numberOfBets - 1; i >= 0; i--) {
+    (async() => {elementDisplay:{
+      const betAddress = await betdeex.methods.bets(i).call();
+      const betInstance = new web3.eth.Contract(betAbi, betAddress);
+      const endedBy = await betInstance.methods.endedBy().call();
+      //console.log('endedby:',endedBy,endedBy!=0x0);
+      if(endedBy==0x0) break elementDisplay;
+      console.log('building result for',betAddress);
+      // const blockNumber = await betInstance.methods.endBlockNumber().call();
+      // const block = await web3.eth.getBlock(blockNumber);
+      const betCategory = await betInstance.methods.category().call();
+      const betSubCategory = await betInstance.methods.subCategory().call();
+      if(displayAllBets || betCategory == currentCategory && betSubCategory == currentSubCategory) {
+        tableElement.children[2].insertAdjacentElement(
+          'beforeend',
+          createResultTd(
+            betAddress
+          )
+        );
+        const newResultComponent = document.getElementById('result'+betAddress);
+        newResultComponent.children[0].firstElementChild.firstElementChild.innerText = category[betCategory] + ' / ' + subCategory[betCategory][betSubCategory];
+        (async()=>{
+          //start time
+          const blockNumber = await betInstance.methods.creationBlockNumber().call();
+          const block = await web3.eth.getBlock(blockNumber);
+          newResultComponent.children[0].firstElementChild.lastElementChild.innerText = new Date(block.timestamp * 1000).toGMTString();
+        })();
+
+        (async()=>{
+          //description
+          const description = await betInstance.methods.description().call();
+          newResultComponent.children[1].innerText = description;
+        })();
+
+        (async()=>{
+          //end time
+          const blockNumber = await betInstance.methods.endBlockNumber().call();
+          const block = await web3.eth.getBlock(blockNumber);
+          newResultComponent.children[2].innerText = new Date(block.timestamp * 1000).toGMTString();
+        })();
+
+        (async()=>{
+          const finalResult = await betInstance.methods.finalResult().call();
+          switch (finalResult) {
+            case 0:
+              newResultComponent.children[3].innerText = 'No';
+              break;
+            case 1:
+              newResultComponent.children[3].innerText = 'Yes';
+              break;
+            case 2:
+              newResultComponent.children[3].innerText = 'Draw';
+              break;
+          }
+        })();
+
+        (async()=>{
+          //total bid
+          const blockNumber = await betInstance.methods.endBlockNumber().call();
+          newResultComponent.childtren[4].innerText = await betInstance.methods.betBalanceInExaEs().call(undefined, blockNumber - 1);
+        })();
+
+
+      }
+    }})();
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // multiple/nexted async await are written for efficient utilisation of time.
 window.addEventListener('load', async () => {
   // new version of metamask
@@ -479,6 +587,15 @@ const makeMenuItemLive = (_id, _category, _subCategory) => {
     loadBets();
   });
 }
+
+document.getElementById('viewAll').addEventListener('click', ()=>{
+  displayAllBets = true;
+  currentCategory = null;
+  currentSubCategory = null;
+  console.log('loading all bets');
+  document.getElementById('categoryDisplay').innerText = 'All';
+  loadBets();
+});
 
 makeMenuItemLive('football', 0, 0);
 makeMenuItemLive('cricket', 0, 1);
