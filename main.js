@@ -7,6 +7,7 @@ var numberOfBets;
 var betAddressInModal; // declared for noting which bet user clicked
 var currentCategory, currentSubCategory, displayAllBets = true;
 var esContract, betdeex, betdeexW3old;
+var updateUserBalance, updateManagerPanel, updateSuperManagerPanel;
 
 // const createBetBox = (_betAddress, _description, _category, _subCategory, _amount, _minimumBet, _pricePercentPerThousand, _timestamp) => {
 //   console.log('creating bet box'+_betAddress);
@@ -415,7 +416,16 @@ window.addEventListener('load', async () => {
       document.getElementById('uAccount').children[0].innerText = 'Connected to ES account on Blockchain';
       document.getElementById('uAccount').children[2].innerText = userAccount;
       document.getElementById('uAccount').removeAttribute('href');
-      (async()=>{
+      setInterval(()=>{
+        const accounts = await web3.eth.getAccounts();
+        if(accounts[0] != userAccount) {
+          console.log('User Account changed');
+          updateSuperManagerPanel();
+          updateManagerPanel();
+          updateUserBalance();
+        }
+      },500);
+      updateManagerPanel = async()=>{
         const isManager = await betdeex.methods.isManager(userAccount).call();
         console.log('isManager:', isManager);
         if(isManager) {
@@ -423,36 +433,45 @@ window.addEventListener('load', async () => {
           //document.getElementById('endBetDiv').style.display = 'block';
           var cssRuleCode = document.all ? 'rules' : 'cssRules'; //account for IE and FF
           document.styleSheets[7][cssRuleCode][1].style.display = 'block';
+        } else {
+          document.getElementById('managerPanel').style.display = 'none';
+          //document.getElementById('endBetDiv').style.display = 'block';
+          var cssRuleCode = document.all ? 'rules' : 'cssRules'; //account for IE and FF
+          document.styleSheets[7][cssRuleCode][1].style.display = 'none';
         }
-      })();
-      (async()=>{
+      };
+      updateManagerPanel();
+      updateSuperManagerPanel = async()=>{
         const superAddress = await betdeex.methods.superManager().call();
         console.log('superAddress: ', superAddress);
         if(userAccount === superAddress) {
           console.log('this is a super account!');
           document.getElementById('superManagerPanel').style.display = 'block';
+        } else {
+          document.getElementById('superManagerPanel').style.display = 'none';
         }
-      })();
+      }; updateSuperManagerPanel();
     } else {
       document.getElementById('uAccount').children[0].innerText = 'Cannot connect to MetaMask';
     }
-    try {
-      const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
-      document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
+    updateUserBalance = () => {
+      try {
+        const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
+        document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
 
-      const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
-      document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) ) + ' ES';
+        const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
+        document.getElementById('betdeex-es-bal').innerText = (betdeexEsBal / (10**18) ) + ' ES';
 
-      document.getElementById('betdeex-recharge').style.display = 'inline';
-      //document.getElementById('betdeex-recharge-box').style.display = 'block';
+        document.getElementById('betdeex-recharge').style.display = 'inline';
+        //document.getElementById('betdeex-recharge-box').style.display = 'block';
 
-      console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
-    } catch (e) {
-      console.log('get accounts error: ',e.message);
-      const node = document.getElementById('betdeex-recharge-box');
-      node.parentNode.removeChild(node);
+        console.log(mainEsBal, betdeexEsBal, mainEsBal / 10**18);
+      } catch (e) {
+        console.log('get accounts error: ',e.message);
+        const node = document.getElementById('betdeex-recharge-box');
+        node.parentNode.removeChild(node);
+      }
     }
-
   })();
 
 //  (async () => {
