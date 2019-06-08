@@ -454,7 +454,7 @@ window.addEventListener('load', async () => {
     } else {
       document.getElementById('uAccount').children[0].innerText = 'Cannot connect to MetaMask';
     }
-    updateUserBalance = () => {
+    updateUserBalance = async() => {
       try {
         const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
         document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
