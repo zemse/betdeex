@@ -416,7 +416,7 @@ window.addEventListener('load', async () => {
       document.getElementById('uAccount').children[0].innerText = 'Connected to ES account on Blockchain';
       document.getElementById('uAccount').children[2].innerText = userAccount;
       document.getElementById('uAccount').removeAttribute('href');
-      setInterval(()=>{
+      setInterval(async()=>{
         const accounts = await web3.eth.getAccounts();
         if(accounts[0] != userAccount) {
           console.log('User Account changed');
