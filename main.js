@@ -132,10 +132,14 @@ const createEfficientBetBox = (_betAddress) => {
 
 
 const loadBets = async () => {
+
   numberOfBets = await betdeex.methods.getNumberOfBets().call();
   console.log('numberOfBets', numberOfBets);
 
+  // these 2 instructions moved below the async method for better UX. old bets were visible
+  document.getElementById('results-table').style.display = 'none';
   document.getElementById('betlist').innerHTML = '';
+  document.getElementById('betsDisplaySection').style.display = 'block';
 
   for(let i = numberOfBets - 1; i >= 0; i--) {
     (async() => {elementDisplay:{
@@ -253,8 +257,9 @@ const loadBets = async () => {
 
 
 
-const createResultTd = async(betAddress) => {
-  const tdTemplate = tableElement.children[0].lastElementChild.cloneNode(true);
+const createResultTd = (betAddress) => {
+  const tdTemplate = document.getElementById('results-table').firstElementChild.firstElementChild.firstElementChild.children[1].children[0].lastElementChild.cloneNode(true);
+  tdTemplate.removeAttribute('style');
   tdTemplate.setAttribute('id', 'result'+betAddress);
   return tdTemplate;
 }
@@ -263,8 +268,13 @@ const createResultTd = async(betAddress) => {
 
 
 const loadResults = async () => {
+
   numberOfBets = await betdeex.methods.getNumberOfBets().call();
   console.log('numberOfBets', numberOfBets);
+
+  document.getElementById('results-table').firstElementChild.firstElementChild.firstElementChild.firstElementChild.firstElementChild.innerText = 'Event Result (Please wait...)';
+  document.getElementById('results-table').style.display = 'block';
+  document.getElementById('betsDisplaySection').style.display = 'none';
 
   const tableElement = document.getElementById('results-table').firstElementChild.firstElementChild.firstElementChild.children[1];
   tableElement.children[1].innerHTML = '';
@@ -282,14 +292,14 @@ const loadResults = async () => {
       const betCategory = await betInstance.methods.category().call();
       const betSubCategory = await betInstance.methods.subCategory().call();
       if(displayAllBets || betCategory == currentCategory && betSubCategory == currentSubCategory) {
-        tableElement.children[2].insertAdjacentElement(
+        tableElement.children[1].insertAdjacentElement(
           'beforeend',
           createResultTd(
             betAddress
           )
         );
         const newResultComponent = document.getElementById('result'+betAddress);
-        newResultComponent.children[0].firstElementChild.firstElementChild.innerText = category[betCategory] + ' / ' + subCategory[betCategory][betSubCategory];
+        newResultComponent.children[0].firstElementChild.firstElementChild.innerText = env.category[betCategory] + ' / ' + env.subCategory[betCategory][betSubCategory];
         (async()=>{
           //start time
           const blockNumber = await betInstance.methods.creationBlockNumber().call();
@@ -311,7 +321,8 @@ const loadResults = async () => {
         })();
 
         (async()=>{
-          const finalResult = await betInstance.methods.finalResult().call();
+          const finalResult = Number(await betInstance.methods.finalResult().call());
+          console.log('final result', finalResult);
           switch (finalResult) {
             case 0:
               newResultComponent.children[3].innerText = 'No';
@@ -328,13 +339,15 @@ const loadResults = async () => {
         (async()=>{
           //total bid
           const blockNumber = await betInstance.methods.endBlockNumber().call();
-          newResultComponent.childtren[4].innerText = await betInstance.methods.betBalanceInExaEs().call(undefined, blockNumber - 1);
+          const betBalanceBeforeEnd = await betInstance.methods.betBalanceInExaEs().call(undefined, blockNumber - 1);
+          newResultComponent.children[4].innerText = ( betBalanceBeforeEnd / 10**18 ) + ' ES';
         })();
 
 
       }
     }})();
   }
+  setTimeout(()=>{document.getElementById('results-table').firstElementChild.firstElementChild.firstElementChild.firstElementChild.firstElementChild.innerText = 'Event Result';},1000);
 };
 
 
@@ -584,6 +597,7 @@ const makeMenuItemLive = (_id, _category, _subCategory) => {
     currentSubCategory = _subCategory;
     console.log('loading the cat-sub cat', _category, _subCategory);
     document.getElementById('categoryDisplay').innerText = env.subCategory[_category][_subCategory];
+    document.getElementById('categoryDisplay2').innerText = 'View '+env.subCategory[_category][_subCategory]+' Results';
     loadBets();
   });
 }
@@ -592,13 +606,27 @@ document.getElementById('viewAll').addEventListener('click', ()=>{
   displayAllBets = true;
   currentCategory = null;
   currentSubCategory = null;
+  loadBets();
   console.log('loading all bets');
   document.getElementById('categoryDisplay').innerText = 'All';
-  loadBets();
+  document.getElementById('categoryDisplay2').innerText = 'View All Results';
 });
 
-makeMenuItemLive('football', 0, 0);
-makeMenuItemLive('cricket', 0, 1);
+for(let i = 0; i < env.category.length; i++) {
+  const li = document.getElementById('c'+i);
+  li.insertAdjacentElement('beforeend',document.createElement(ul));
+  const ul = li.children[1];
+  ul.setAttribute('class', 'dropdown-menu dropdown-inner');
+  ul.setAttribute('role', 'menu');
+  for(let j = 0; i < env.subCategory[i].length; j++) {
+    const childLi = document.createElement(li);
+    childLi.setAttribute('id', 'c'+i+'s'+j);
+    makeMenuItemLive('c'+i+'s'+j, i, j);
+  }
+}
+
+makeMenuItemLive('c0s0', 0, 0);
+makeMenuItemLive('c0s1', 0, 1);
 
 document.getElementById('managerPanel').children[4].innerHTML = ''; //empty placeholder options
 for(let categoryId in env.category) {

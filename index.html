@@ -206,39 +206,40 @@
                <li id="viewAll">
                   <a><img src="images/icon/events/politics.png" alt=""> View All</a>
                </li>
-               <li>
+               <li id="c0">
                   <a data-toggle="dropdown"><img src="images/icon/f4.png" alt="">Sports</a>
                   <ul class="dropdown-menu dropdown-inner" role="menu">
-                     <li id="football"><a>Football</a></li>
-                     <li id="cricket"><a>Cricket</a></li>
+                     <li id="c0s0"><a>Football</a></li>
+                     <li id="c0s1"><a>Cricket</a></li>
                   </ul>
                </li>
-               <li>
-                  <a><img src="images/icon/events/politics.png" alt=""> Politics</a>
+               <li id="c1">
+                  <a data-toggle="dropdown"><img src="images/icon/events/politics.png" alt=""> Politics</a>
                </li>
-               <li>
+               <li id="c2">
                   <a data-toggle="dropdown"><img src="images/icon/events/movies.png" alt=""> Movies</a>
                </li>
-               <li>
-                  <a><img src="images/icon/events/tech.png" alt=""> Tech</a>
+               <li id="c3">
+                  <a data-toggle="dropdown"><img src="images/icon/events/tech.png" alt=""> Tech</a>
                </li>
 
-               <li>
-                  <a><img src="images/icon/events/science.png" alt=""> Science</a>
+               <li id="c4">
+                  <a data-toggle="dropdown"><img src="images/icon/events/science.png" alt=""> Science</a>
                </li>
-               <li>
-                  <a><img src="images/icon/events/entertainment.png" alt=""> Entertainment</a>
+               <li id="c5">
+                  <a data-toggle="dropdown"><img src="images/icon/events/entertainment.png" alt=""> Entertainment</a>
                </li>
-			          <li>
-                  <a><img src="images/icon/events/celebrities.png" alt=""> Celebrities</a>
+			          <li id="c6">
+                  <a data-toggle="dropdown"><img src="images/icon/events/celebrities.png" alt=""> Celebrities</a>
                </li>
-			            <li>
-                  <a><img src="images/icon/events/current_affairs.png" alt=""> Current </a>
+			          <li id="c7">
+                  <a data-toggle="dropdown"><img src="images/icon/events/current_affairs.png" alt=""> Current </a>
                </li>
-			            <li>
-                  <a><img src="images/icon/events/global.png" alt=""> Global</a>
-               </li><li>
-                  <a><img src="images/icon/events/users_choice.png" alt=""> Users Choice</a>
+			          <li id="c8">
+                  <a data-toggle="dropdown"><img src="images/icon/events/global.png" alt=""> Global</a>
+               </li>
+               <li id=c9>
+                  <a data-toggle="dropdown"><img src="images/icon/events/users_choice.png" alt=""> Users Choice</a>
                </li>
 
             </ul>
@@ -290,7 +291,7 @@
                         <table class="myTable">
                             <thead>
                               <tr>
-                                  <th>Event Name</th>
+                                  <th>Category</th>
                                   <th>Question</th>
                                   <th class="e_h1">Close Time</th>
                                   <th>Result</th>
@@ -299,28 +300,18 @@
                               <tr style="display:none">
                                   <td>
                                       <div class="h-tm-ra1" style="padding:0">
-                                          <h4>Football</h4><span>AUGUST 23RD, 2017</span>
+                                          <h4>Loading...</h4><span>Loading...</span>
                                       </div>
                                   </td>
                                   <td></td>
-                                  <td class="e_h1">30-6-2019</td>
-                                  <td>Yes</td>
-                                  <td>517.1241 ES</td>
+                                  <td class="e_h1">Loading...</td>
+                                  <td>Loading...</td>
+                                  <td style="text-align:center">Loading...</td>
                               </tr>
                             </thead>
 
                             <tbody>
-                                <tr>
-                                    <td>01</td>
-                                    <td>
-                                        <div class="h-tm-ra1" style="padding:0">
-                                            <h4>Football</h4><span>AUGUST 23RD, 2017</span>
-                                        </div>
-                                    </td>
-                                    <td class="e_h1">30-6-2019</td>
-                                    <td>Yes</td>
-                                    <td>517.1241 ETH</td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
@@ -332,7 +323,7 @@
             </div>
         </section>
 
-      <section>
+      <section id="betsDisplaySection">
          <div class="se lp">
             <div class="row">
 
@@ -369,7 +360,7 @@
 
                <div class="inn-title">
                   <h2><i class="fa fa-check" aria-hidden="true"></i> <span id="categoryDisplay">ALL</span> <span>EVENTS</span></h2>
-
+                  <div style="display:block; text-align: right"><button id="categoryDisplay2" onclick="loadResults()">View All Results</button></div>
                </div>
                <!-- LEFT SIDE: SPORTS EVENTS -->
                <div class="event-left">
