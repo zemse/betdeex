@@ -662,7 +662,17 @@ for(let categoryId in env.category) {
   document.getElementById('managerPanel').children[4].insertAdjacentElement('beforeend',optionElement);
 }
 
-//document.
+document.getElementById('managerPanel').children[4].addEventListener('onchange',()=>{
+  const newBetCategory = document.getElementById('managerPanel').children[4];
+  for(let categoryId in env.subCategory[newBetCategory]) {
+    const optionElement = document.createElement('option');
+    optionElement.setAttribute('value', categoryId);
+    optionElement.innerText = env.category[categoryId];
+    document.getElementById('managerPanel').children[7].innerHTML = '';
+    document.getElementById('managerPanel').children[7].insertAdjacentElement('beforeend',optionElement);
+  }
+});
+
 
 
 
