@@ -420,6 +420,7 @@ window.addEventListener('load', async () => {
         const accounts = await web3.eth.getAccounts();
         if(accounts[0] != userAccount) {
           console.log('User Account changed');
+          userAccount = accounts[0];
           updateSuperManagerPanel();
           updateManagerPanel();
           updateUserBalance();
