@@ -652,8 +652,8 @@ for(let i = 0; i < env.category.length; i++) {
 }
 
 
-makeMenuItemLive('c0s0', 0, 0);
-makeMenuItemLive('c0s1', 0, 1);
+//makeMenuItemLive('c0s0', 0, 0);
+//makeMenuItemLive('c0s1', 0, 1);
 
 document.getElementById('managerPanel').children[4].innerHTML = ''; //empty placeholder options
 for(let categoryId in env.category) {
