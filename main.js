@@ -582,6 +582,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
     betInstance.enterBet(choice, amount * (10**18), (err, result) => {
       if(err) {
         console.log(err.message);
+        document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
       }
       console.log(result);
     });
