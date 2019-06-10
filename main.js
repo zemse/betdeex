@@ -746,7 +746,7 @@ document.getElementById('managerPanel').children[12].addEventListener('click', a
       console.log(err.message);
       document.getElementById('managerPanel').children[11].innerText = err.message;
     } else {
-      document.getElementById('managerPanel').children[11].innerText = 'Tx hash: ' + result + '. Please try view previliges after 15 secs';
+      document.getElementById('managerPanel').children[11].innerText = 'Tx hash: ' + result + '. Please click on View All bets after 15 secs to see your bet.';
     }
     console.log(result);
 
