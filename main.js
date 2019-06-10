@@ -461,7 +461,7 @@ window.addEventListener('load', async () => {
     }
     updateUserBalance = async() => {
       try {
-        const mainEsBal = await esContract.methods.balanceOf(userAccount).call(); //
+        const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
         document.getElementById('main-es-bal').innerText = (mainEsBal / (10**18) ) + ' ES';
 
         const betdeexEsBal = await betdeex.methods.getBettorBalance(userAccount).call();
