@@ -191,7 +191,7 @@ contract Bet {
                 bettorAddress: msg.sender,
                 betAmountInExaEs: _betTokensInExaEs
             }));
-        } else if (_choice == 2) {
+        } else if (_choice == 2 && isDrawPossible) {
             totalBetTokensInExaEsByChoice[2] += _betTokensInExaEs;
             _arrayIndex = drawBettors.length;
             drawBettors.push(Bettor({
