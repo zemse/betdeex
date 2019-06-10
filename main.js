@@ -599,7 +599,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
     console.log('Bet placed', accounts[0], res.args._bettorAddress);
     if(accounts[0].toLowerCase() == res.args._bettorAddress) {
       document.getElementById('modalSubmit').children[1].innerText = 'PLACE A BET';
-
+      document.getElementById('modal-close-button').click();
       loadBets();
 
       const mainEsBal = await esContract.methods.balanceOf(userAccount).call();
