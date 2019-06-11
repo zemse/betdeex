@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://zemse.github.io/betdeex/" rel="noopener">
- <img width=50% src="./assets/icon.png" alt="BetDeEx logo"></a>
+ <img width=50% src="../images/betdeex-logo.png" ></a>
 </p>
 
 <h3 align="center">BetDeEx</h3>
