@@ -570,7 +570,7 @@ document.getElementById('modalSubmit').addEventListener('click', async() => {
   // sign and send transaction.
   const choice = Number(document.getElementById('modal-option').value);
   const amount = Number(document.getElementById('modal-es-amount').value);
-
+  if(!web3old) return alert('Please install MetaMask or use ');
   const betInstance = web3old.eth.contract(betAbi).at(betAddressInModal);
 
 
