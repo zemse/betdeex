@@ -1025,11 +1025,75 @@ const betdeexAbi = [
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_betAmountInExaEs",
+				"name": "_ender",
+				"type": "address"
+			},
+			{
+				"name": "_result",
+				"type": "uint8"
+			},
+			{
+				"name": "_gasFee",
 				"type": "uint256"
 			}
 		],
-		"name": "addAmountToBet",
+		"name": "emitEndEvent",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "betBalanceInExaEs",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "bets",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "_tokensInExaEs",
+				"type": "uint256"
+			}
+		],
+		"name": "sendTokensToAddress",
 		"outputs": [
 			{
 				"name": "",
@@ -1049,6 +1113,115 @@ const betdeexAbi = [
 			}
 		],
 		"name": "addManager",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_betAmountInExaEs",
+				"type": "uint256"
+			}
+		],
+		"name": "addAmountToBet",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_from",
+				"type": "address"
+			}
+		],
+		"name": "getBettorBalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "superManager",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"name": "_category",
+				"type": "uint8"
+			},
+			{
+				"name": "_subCategory",
+				"type": "uint8"
+			},
+			{
+				"name": "_minimumBet",
+				"type": "uint256"
+			},
+			{
+				"name": "_pricePercent",
+				"type": "uint256"
+			},
+			{
+				"name": "_isDrawPossible",
+				"type": "bool"
+			},
+			{
+				"name": "_pauseBlockNumber",
+				"type": "uint256"
+			}
+		],
+		"name": "createBet",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_manager",
+				"type": "address"
+			}
+		],
+		"name": "removeManager",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -1081,86 +1254,47 @@ const betdeexAbi = [
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_description",
-				"type": "string"
+				"name": "_bettorAddress",
+				"type": "address"
 			},
 			{
-				"name": "_category",
+				"name": "_choice",
 				"type": "uint8"
 			},
 			{
-				"name": "_subCategory",
-				"type": "uint8"
-			},
-			{
-				"name": "_minimumBet",
-				"type": "uint256"
-			},
-			{
-				"name": "_pricePercent",
+				"name": "_bettorIndex",
 				"type": "uint256"
 			}
 		],
-		"name": "createBet",
+		"name": "emitNewBettingEvent",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getNumberOfBets",
 		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
 			{
 				"name": "",
 				"type": "address"
 			}
 		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_ender",
-				"type": "address"
-			},
-			{
-				"name": "_result",
-				"type": "uint8"
-			},
-			{
-				"name": "_gasFee",
-				"type": "uint256"
-			}
-		],
-		"name": "emitEndEvent",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_manager",
-				"type": "address"
-			}
-		],
-		"name": "removeManager",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_to",
-				"type": "address"
-			},
-			{
-				"name": "_tokensInExaEs",
-				"type": "uint256"
-			}
-		],
-		"name": "sendTokensToAddress",
+		"name": "isManager",
 		"outputs": [
 			{
 				"name": "",
@@ -1168,7 +1302,7 @@ const betdeexAbi = [
 			}
 		],
 		"payable": false,
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -1219,6 +1353,33 @@ const betdeexAbi = [
 		"inputs": [
 			{
 				"indexed": true,
+				"name": "_betAddress",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_bettorAddress",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_choice",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"name": "_bettorIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "NewBetting",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
 				"name": "_ender",
 				"type": "address"
 			},
@@ -1245,110 +1406,6 @@ const betdeexAbi = [
 		],
 		"name": "EndBetContract",
 		"type": "event"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "betBalanceInExaEs",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "bets",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "_from",
-				"type": "address"
-			}
-		],
-		"name": "getBettorBalance",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getNumberOfBets",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "isManager",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "superManager",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
 	}
 ];
 
@@ -1612,6 +1669,20 @@ const betAbi = [
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [],
+		"name": "pauseBlockNumber",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
@@ -1706,37 +1777,18 @@ const betAbi = [
 			{
 				"name": "_pricePercentPerThousand",
 				"type": "uint256"
+			},
+			{
+				"name": "_isDrawPossible",
+				"type": "bool"
+			},
+			{
+				"name": "_pauseBlockNumber",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "_bettorAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "_betAmountInExaEs",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "_choice",
-				"type": "uint8"
-			},
-			{
-				"indexed": false,
-				"name": "_bettorsIndex",
-				"type": "uint256"
-			}
-		],
-		"name": "NewBetting",
-		"type": "event"
 	}
 ];
