@@ -650,6 +650,7 @@ for(let i = 0; i < env.category.length; i++) {
     ul.insertAdjacentElement('beforeend',childLi);
     makeMenuItemLive('c'+i+'s'+j, i, j);
   }
+  ul.style.top = 76*(i+1)+'px';
 }
 
 
