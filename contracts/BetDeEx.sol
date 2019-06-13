@@ -57,8 +57,16 @@ contract BetDeEx {
 
     // bet functions
 
-    function createBet(string memory _description, uint8 _category, uint8 _subCategory, uint256 _minimumBet, uint256 _pricePercent, bool _isDrawPossible) public onlyManager returns (address) {
-        Bet _newBet = new Bet(_description, _category, _subCategory, _minimumBet, _pricePercent, _isDrawPossible);
+    function createBet(
+        string memory _description,
+        uint8 _category,
+        uint8 _subCategory,
+        uint256 _minimumBet,
+        uint256 _pricePercent,
+        bool _isDrawPossible,
+        uint256 _pauseBlockNumber
+    ) public onlyManager returns (address) {
+        Bet _newBet = new Bet(_description, _category, _subCategory, _minimumBet, _pricePercent, _isDrawPossible, _pauseBlockNumber);
         bets.push(address(_newBet));
         isBetValid[address(_newBet)] = true;
 
@@ -114,9 +122,6 @@ contract BetDeEx {
         betBalanceInExaEs[msg.sender] -= _tokensInExaEs;
     }
 
-
-
-
 }
 
 contract Bet {
@@ -138,14 +143,13 @@ contract Bet {
 
     address public endedBy;
 
-    uint256 public creationBlockNumber;
-    uint256 public endBlockNumber;
+    uint256 public creationBlockNumber; // (predefined)
+    uint256 public pauseBlockNumber; // (predefined) after this no more bettings are not allowed
+    uint256 public endBlockNumber; // (defined when manager ends bet)
 
     uint256 public minimumBetInExaEs;
     uint256 public pricePercentPerThousand; // 1/1000
     uint256[3] public totalBetTokensInExaEsByChoice = [0, 0, 0]; // array of total bet value of no, yes, draw voters
-
-
 
     Bettor[] public noBettors;
     Bettor[] public yesBettors;
@@ -157,7 +161,7 @@ contract Bet {
     }
 
     // _pricePercentPerThousand is an integer from 0 to 1000. if we want to keep .2% then its value is 998.
-    constructor(string memory _description, uint8 _category, uint8 _subCategory, uint256 _minimumBetInExaEs, uint256 _pricePercentPerThousand, bool _isDrawPossible) public {
+    constructor(string memory _description, uint8 _category, uint8 _subCategory, uint256 _minimumBetInExaEs, uint256 _pricePercentPerThousand, bool _isDrawPossible, uint256 _pauseBlockNumber) public {
         description = _description;
         isDrawPossible = _isDrawPossible;
         category = _category;
@@ -166,6 +170,7 @@ contract Bet {
         pricePercentPerThousand = _pricePercentPerThousand;
         betDeEx = BetDeEx(msg.sender);
         creationBlockNumber = block.number;
+        pauseBlockNumber = _pauseBlockNumber;
     }
 
     function betBalanceInExaEs() public view returns (uint256) {
@@ -174,6 +179,7 @@ contract Bet {
 
     // _choice should be 0, 1, 2;
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
+        require(block.number <= pauseBlockNumber);
         require(_betTokensInExaEs >= minimumBetInExaEs);
         require(betDeEx.getBettorBalance(msg.sender) >= _betTokensInExaEs);
         uint256 _arrayIndex;
@@ -210,6 +216,7 @@ contract Bet {
     }
 
     function endBet(uint8 _choice) public onlyManager {
+        require(block.number >= pauseBlockNumber);
 
         // because its required to initialise the pointer with something.
         Bettor[] storage _winnerBettors = noBettors;
@@ -252,6 +259,7 @@ contract Bet {
             return drawBettors.length;
         }
     }
+
 }
 
 // EraswapToken is pasted below for Interface requirement from https://github.com/KMPARDS/EraSwapSmartContracts/blob/master/Eraswap/contracts/EraswapToken/EraswapToken.sol
