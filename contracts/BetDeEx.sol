@@ -59,6 +59,7 @@ contract BetDeEx {
 
     // bet functions
 
+    // This method is used by manager to deploy a new bet. 
     function createBet(
         string memory _description,
         uint8 _category,
@@ -76,23 +77,15 @@ contract BetDeEx {
 
         return address(_newBet);
     }
-
-    function addAmountToBet(uint256 _betAmountInExaEs) public onlyBetContract returns (bool) {
-        betBalanceInExaEs[msg.sender] += _betAmountInExaEs;
-        return true;
-    }
-
-    function emitNewBettingEvent(address _bettorAddress, uint8 _choice, uint256 _bettorIndex) public onlyBetContract {
-        emit NewBetting(msg.sender, _bettorAddress, _choice, _bettorIndex);
-    }
-
-    function emitEndEvent(address _ender, uint8 _result, uint256 _gasFee) public onlyBetContract {
-        emit EndBetContract(_ender, msg.sender, _result, betBalanceInExaEs[msg.sender], _gasFee);
-    }
-
+    
     function getNumberOfBets() public view returns (uint256) {
         return bets.length;
     }
+
+    
+
+
+
 
 
     // manager crud - only would be called by superManager
@@ -107,18 +100,42 @@ contract BetDeEx {
 
 
 
-    // esTokenContract functions that will be called from bet contracts to transfer tokens
 
+    // this is a functionality only for bet contracts to add balance when someone enters a bet.
+    function addAmountToBet(uint256 _betAmountInExaEs) public onlyBetContract returns (bool) {
+        betBalanceInExaEs[msg.sender] += _betAmountInExaEs;
+        return true;
+    }
+
+    // this functionality is only for bet contracts to emit a event when a new bet is placed
+    function emitNewBettingEvent(address _bettorAddress, uint8 _choice, uint256 _bettorIndex) public onlyBetContract {
+        emit NewBetting(msg.sender, _bettorAddress, _choice, _bettorIndex);
+    }
+
+    // this functionality is only for bet contracts to emit event when a bet is ended
+    function emitEndEvent(address _ender, uint8 _result, uint256 _gasFee) public onlyBetContract {
+        emit EndBetContract(_ender, msg.sender, _result, betBalanceInExaEs[msg.sender], _gasFee);
+    }
+
+
+
+
+
+    // esTokenContract functions that will be called from bet contracts to transfer tokens
+    
+    // this method checks spending allowance of the BetDeEx contract from user's account
     function getBettorBalance(address _from) public view returns (uint256) {
         return esTokenContract.allowance(_from, address(this));
     }
 
+    // this method is used to transfer tokens from user's account to BetDeEx's address
     function collectBettorTokens(address _from, uint256 _betTokensInExaEs) public onlyBetContract returns (bool) {
         require(esTokenContract.transferFrom(_from, address(this), _betTokensInExaEs));
         betBalanceInExaEs[msg.sender] += _betTokensInExaEs;
         return true;
     }
 
+    // this method is used to transfer prizes to winners
     function sendTokensToAddress(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
         require(esTokenContract.transfer(_to, _tokensInExaEs));
         betBalanceInExaEs[msg.sender] -= _tokensInExaEs;
@@ -179,7 +196,7 @@ contract Bet {
         return betDeEx.betBalanceInExaEs(address(this));
     }
 
-    // _choice should be 0, 1, 2;
+    // _choice should be 0, 1, 2; no => 0, yes => 1, draw => 2.
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
         require(block.number <= pauseBlockNumber);
         require(_betTokensInExaEs >= minimumBetInExaEs);
@@ -217,6 +234,7 @@ contract Bet {
         betDeEx.emitNewBettingEvent(msg.sender, _choice, _arrayIndex);
     }
 
+    // this method is used by manager to give correct answer and transfer prize to winners
     function endBet(uint8 _choice) public onlyManager {
         require(block.number >= pauseBlockNumber);
 
@@ -252,6 +270,7 @@ contract Bet {
         betDeEx.emitEndEvent(endedBy, _choice, _gasFee);
     }
 
+    // get number of bettors on this bet by choice 
     function getNumberOfChoiceBettors(uint8 _choice) public view returns (uint256) {
         if (_choice == 0) {
             return noBettors.length;
