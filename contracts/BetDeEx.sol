@@ -3,14 +3,14 @@ pragma solidity ^0.5.9;
 import "https://raw.githubusercontent.com/zemse/betdeex/master/contracts/ESContract.sol";
 
 contract BetDeEx {
-    address[] public bets;
+    address[] public bets; // stores addresses of bets
     address public superManager; //required to be public because ES needs to be sent transaparently.
 
     EraswapToken esTokenContract;
 
-    mapping(address => uint256) public betBalanceInExaEs;
-    mapping(address => bool) private isBetValid;
-    mapping(address => bool) public isManager;
+    mapping(address => uint256) public betBalanceInExaEs; // all ES tokens are transfered to main BetDeEx address for common allowance in ERC20 so this mapping stores total ES tokens betted in each bet.
+    mapping(address => bool) public isBetValid; // stores authentic bet contracts (only deployed through this contract)
+    mapping(address => bool) public isManager; // stores addresses who are given manager privileges by superManager
 
     event NewBetContract (
         address indexed _deployer,
@@ -32,7 +32,7 @@ contract BetDeEx {
         address indexed _contractAddress,
         uint8 _result,
         uint256 _prizePool,
-        uint256 _gasFee
+        uint256 _platformFee
     );
 
     modifier onlySuperManager() {
@@ -59,7 +59,7 @@ contract BetDeEx {
 
     // bet functions
 
-    // This method is used by manager to deploy a new bet. 
+    // This method can only be called by manager to deploy a new bet. 
     function createBet(
         string memory _description,
         uint8 _category,
@@ -67,12 +67,13 @@ contract BetDeEx {
         uint256 _minimumBet,
         uint256 _pricePercent,
         bool _isDrawPossible,
-        uint256 _pauseBlockNumber
+        uint256 _pauseBlockNumber // bet will be open for betting until this block, after this block numberexceeds any user will not be able to place bet. and manager can only end bet after this time
     ) public onlyManager returns (address) {
         Bet _newBet = new Bet(_description, _category, _subCategory, _minimumBet, _pricePercent, _isDrawPossible, _pauseBlockNumber);
         bets.push(address(_newBet));
         isBetValid[address(_newBet)] = true;
 
+        // emitting an event for UI to get latest bets.
         emit NewBetContract(msg.sender, address(_newBet),  _category, _subCategory, _description);
 
         return address(_newBet);
@@ -101,18 +102,18 @@ contract BetDeEx {
 
 
 
-    // this is a functionality only for bet contracts to add balance when someone enters a bet.
+    // this is an internal functionality only for bet contracts to add balance when someone enters a bet. This is because actual ES tokens are stored in BetDeEx contract
     function addAmountToBet(uint256 _betAmountInExaEs) public onlyBetContract returns (bool) {
         betBalanceInExaEs[msg.sender] += _betAmountInExaEs;
         return true;
     }
 
-    // this functionality is only for bet contracts to emit a event when a new bet is placed
+    // this functionality is only for bet contracts to emit a event when a new bet is placed so that front end can get the information by subscribing to  contract
     function emitNewBettingEvent(address _bettorAddress, uint8 _choice, uint256 _bettorIndex) public onlyBetContract {
         emit NewBetting(msg.sender, _bettorAddress, _choice, _bettorIndex);
     }
 
-    // this functionality is only for bet contracts to emit event when a bet is ended
+    // this functionality is only for bet contracts to emit event when a bet is ended so that front end can get the information by subscribing to  contract
     function emitEndEvent(address _ender, uint8 _result, uint256 _gasFee) public onlyBetContract {
         emit EndBetContract(_ender, msg.sender, _result, betBalanceInExaEs[msg.sender], _gasFee);
     }
@@ -153,23 +154,23 @@ contract Bet {
 
     BetDeEx betDeEx;
 
-    string public description;
-    bool isDrawPossible;
-    uint8 public category;
-    uint8 public subCategory;
+    string public description; // question text of the bet
+    bool isDrawPossible; // if false then user cannot bet on draw choice
+    uint8 public category; // sports, movies
+    uint8 public subCategory; // cricket, football
 
-    uint8 public finalResult;
-
-    address public endedBy;
+    uint8 public finalResult; // given a value when manager ends bet
+    address public endedBy; // address of manager who enters the correct choice while ending the bet
 
     uint256 public creationBlockNumber; // (predefined)
-    uint256 public pauseBlockNumber; // (predefined) after this no more bettings are not allowed
+    uint256 public pauseBlockNumber; // (predefined) after this no more bettings are not allowed by users
     uint256 public endBlockNumber; // (defined when manager ends bet)
 
-    uint256 public minimumBetInExaEs;
-    uint256 public pricePercentPerThousand; // 1/1000
+    uint256 public minimumBetInExaEs; // minimum amount required to enter bet
+    uint256 public pricePercentPerThousand; // percentage of bet balance which will be dristributed to winners and rest is platform fee
     uint256[3] public totalBetTokensInExaEsByChoice = [0, 0, 0]; // array of total bet value of no, yes, draw voters
 
+    // stores bettor details by choice
     Bettor[] public noBettors;
     Bettor[] public yesBettors;
     Bettor[] public drawBettors;
@@ -179,7 +180,7 @@ contract Bet {
         _;
     }
 
-    // _pricePercentPerThousand is an integer from 0 to 1000. if we want to keep .2% then its value is 998.
+    // _pricePercentPerThousand is an integer from 0 to 1000. if we want to keep .2% then its value is 998. if 2% then value is 980
     constructor(string memory _description, uint8 _category, uint8 _subCategory, uint256 _minimumBetInExaEs, uint256 _pricePercentPerThousand, bool _isDrawPossible, uint256 _pauseBlockNumber) public {
         description = _description;
         isDrawPossible = _isDrawPossible;
@@ -249,8 +250,10 @@ contract Bet {
             require(false);
         }
 
+        // the platform fee is excluded from entire bet balance and this is the amount to be distributed
         uint256 totalPrize = betBalanceInExaEs().mul(pricePercentPerThousand).div(1000);
 
+        // sending the platform fee excluded amount to the winners
         for(uint256 i = 0; i < _winnerBettors.length; i++) {
             if(_winnerBettors[i].bettorAddress != address(0)) {
                 betDeEx.sendTokensToAddress(
@@ -260,14 +263,17 @@ contract Bet {
             }
         }
 
-        uint256 _gasFee = betBalanceInExaEs();
+        // this is the left platform fee according to the totalPrize variable above
+        uint256 _platformFee = betBalanceInExaEs();
 
         endedBy = msg.sender;
-        betDeEx.sendTokensToAddress(betDeEx.superManager(), _gasFee);
+        
+        // sending plaftrom fee to the super manager
+        betDeEx.sendTokensToAddress(betDeEx.superManager(), _platformFee);
 
         endBlockNumber = block.number;
         finalResult = _choice;
-        betDeEx.emitEndEvent(endedBy, _choice, _gasFee);
+        betDeEx.emitEndEvent(endedBy, _choice, _platformFee);
     }
 
     // get number of bettors on this bet by choice 
