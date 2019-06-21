@@ -3,6 +3,8 @@ pragma solidity ^0.5.9;
 import "https://raw.githubusercontent.com/zemse/betdeex/master/contracts/ESContract.sol";
 
 contract BetDeEx {
+    using SafeMath for uint256;
+
     address[] public bets; // stores addresses of bets
     address public superManager; //required to be public because ES needs to be sent transaparently.
 
@@ -33,6 +35,13 @@ contract BetDeEx {
         uint8 _result,
         uint256 _prizePool,
         uint256 _platformFee
+    );
+
+    // This event is for indexing ES transactions to winner bettors from this contract
+    event TransferES (
+        address indexed _betContract,
+        address indexed _to,
+        uint256 _tokensInExaEs
     );
 
     modifier onlySuperManager() {
@@ -102,11 +111,6 @@ contract BetDeEx {
 
 
 
-    // this is an internal functionality only for bet contracts to add balance when someone enters a bet. This is because actual ES tokens are stored in BetDeEx contract
-    function addAmountToBet(uint256 _betAmountInExaEs) public onlyBetContract returns (bool) {
-        betBalanceInExaEs[msg.sender] += _betAmountInExaEs;
-        return true;
-    }
 
     // this functionality is only for bet contracts to emit a event when a new bet is placed so that front end can get the information by subscribing to  contract
     function emitNewBettingEvent(address _bettorAddress, uint8 _choice, uint256 _bettorIndex) public onlyBetContract {
@@ -132,14 +136,16 @@ contract BetDeEx {
     // this method is used to transfer tokens from user's account to BetDeEx's address
     function collectBettorTokens(address _from, uint256 _betTokensInExaEs) public onlyBetContract returns (bool) {
         require(esTokenContract.transferFrom(_from, address(this), _betTokensInExaEs));
-        betBalanceInExaEs[msg.sender] += _betTokensInExaEs;
+        betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].add(_betTokensInExaEs);
         return true;
     }
 
     // this method is used to transfer prizes to winners
     function sendTokensToAddress(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
+        betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].sub(_tokensInExaEs);
         require(esTokenContract.transfer(_to, _tokensInExaEs));
-        betBalanceInExaEs[msg.sender] -= _tokensInExaEs;
+        emit TransferES(msg.sender, _to, _tokensInExaEs);
+        return true;
     }
 
 }
@@ -201,24 +207,28 @@ contract Bet {
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
         require(block.number <= pauseBlockNumber);
         require(_betTokensInExaEs >= minimumBetInExaEs);
-        require(betDeEx.getBettorBalance(msg.sender) >= _betTokensInExaEs);
+        //require(betDeEx.getBettorBalance(msg.sender) >= _betTokensInExaEs); removing as below line is sufficient
+
+        // betDeEx contract transfers the tokens to it self
+        require(betDeEx.collectBettorTokens(msg.sender, _betTokensInExaEs));
+
         uint256 _arrayIndex;
         if (_choice == 0) {
-            totalBetTokensInExaEsByChoice[0] += _betTokensInExaEs;
+            totalBetTokensInExaEsByChoice[0] = totalBetTokensInExaEsByChoice[0].add(_betTokensInExaEs);
             _arrayIndex = noBettors.length;
             noBettors.push(Bettor({
                 bettorAddress: msg.sender,
                 betAmountInExaEs: _betTokensInExaEs
             }));
         } else if (_choice == 1) {
-            totalBetTokensInExaEsByChoice[1] += _betTokensInExaEs;
+            totalBetTokensInExaEsByChoice[1] = totalBetTokensInExaEsByChoice[1].add(_betTokensInExaEs);
             _arrayIndex = yesBettors.length;
             yesBettors.push(Bettor({
                 bettorAddress: msg.sender,
                 betAmountInExaEs: _betTokensInExaEs
             }));
         } else if (_choice == 2 && isDrawPossible) {
-            totalBetTokensInExaEsByChoice[2] += _betTokensInExaEs;
+            totalBetTokensInExaEsByChoice[2] = totalBetTokensInExaEsByChoice[2].add(_betTokensInExaEs);
             _arrayIndex = drawBettors.length;
             drawBettors.push(Bettor({
                 bettorAddress: msg.sender,
@@ -228,8 +238,6 @@ contract Bet {
             require(false);
         }
 
-        // betDeEx contract transfers the tokens to it self
-        require(betDeEx.collectBettorTokens(msg.sender, _betTokensInExaEs));
 
         //emit NewBetting(msg.sender, _betTokensInExaEs, _choice, _arrayIndex);
         betDeEx.emitNewBettingEvent(msg.sender, _choice, _arrayIndex);
@@ -256,9 +264,10 @@ contract Bet {
         // sending the platform fee excluded amount to the winners
         for(uint256 i = 0; i < _winnerBettors.length; i++) {
             if(_winnerBettors[i].bettorAddress != address(0)) {
+                uint256 _winningAmount = _winnerBettors[i].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[_choice]);
                 betDeEx.sendTokensToAddress(
                     _winnerBettors[i].bettorAddress,
-                    _winnerBettors[i].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[_choice])
+                    _winningAmount
                 );
             }
         }
@@ -267,9 +276,9 @@ contract Bet {
         uint256 _platformFee = betBalanceInExaEs();
 
         endedBy = msg.sender;
-        
+
         // sending plaftrom fee to the super manager
-        betDeEx.sendTokensToAddress(betDeEx.superManager(), _platformFee);
+        require(betDeEx.sendTokensToAddress(betDeEx.superManager(), _platformFee));
 
         endBlockNumber = block.number;
         finalResult = _choice;
