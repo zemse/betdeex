@@ -11,6 +11,7 @@ contract BetDeEx {
     EraswapToken esTokenContract;
 
     mapping(address => uint256) public betBalanceInExaEs; // all ES tokens are transfered to main BetDeEx address for common allowance in ERC20 so this mapping stores total ES tokens betted in each bet.
+    mapping(address => uint256) public bettorWonExaEs; // prizes are stored in this wallet and bettor can withdraw it anytime to main ES contract
     mapping(address => bool) public isBetValid; // stores authentic bet contracts (only deployed through this contract)
     mapping(address => bool) public isManager; // stores addresses who are given manager privileges by superManager
 
@@ -68,7 +69,7 @@ contract BetDeEx {
 
     // bet functions
 
-    // This method can only be called by manager to deploy a new bet. 
+    // This method can only be called by manager to deploy a new bet.
     function createBet(
         string memory _description,
         uint8 _category,
@@ -87,12 +88,12 @@ contract BetDeEx {
 
         return address(_newBet);
     }
-    
+
     function getNumberOfBets() public view returns (uint256) {
         return bets.length;
     }
 
-    
+
 
 
 
@@ -127,25 +128,40 @@ contract BetDeEx {
 
 
     // esTokenContract functions that will be called from bet contracts to transfer tokens
-    
-    // this method checks spending allowance of the BetDeEx contract from user's account
-    function getBettorBalance(address _from) public view returns (uint256) {
-        return esTokenContract.allowance(_from, address(this));
-    }
 
-    // this method is used to transfer tokens from user's account to BetDeEx's address
+    // this method is used to transfer tokens from bettor wallet to bet
     function collectBettorTokens(address _from, uint256 _betTokensInExaEs) public onlyBetContract returns (bool) {
-        require(esTokenContract.transferFrom(_from, address(this), _betTokensInExaEs));
+        // first check if user has money in bettorWonExaEs, collect from that.
+        // if insufficient in bettorWonExaEs then transferFrom the remaining ES from token contract.
+        if(bettorWonExaEs[_from] >= _betTokensInExaEs) {
+            bettorWonExaEs[_from] = bettorWonExaEs[_from].sub(_betTokensInExaEs);
+        } else {
+            uint256 _remainingAmount = _betTokensInExaEs.sub(bettorWonExaEs[_from]);
+            bettorWonExaEs[_from] = 0;
+            require(esTokenContract.transferFrom(_from, address(this), _remainingAmount));
+        }
         betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].add(_betTokensInExaEs);
         return true;
     }
 
     // this method is used to transfer prizes to winners
-    function sendTokensToAddress(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
+    function sendTokensToWallet(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
         betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].sub(_tokensInExaEs);
-        require(esTokenContract.transfer(_to, _tokensInExaEs));
+        bettorWonExaEs[_to] = bettorWonExaEs[_to].add(_tokensInExaEs);
+
         emit TransferES(msg.sender, _to, _tokensInExaEs);
         return true;
+    }
+
+    function collectPlatformFee() public onlyBetContract returns (bool) {
+        require(esTokenContract.transfer(superManager, betBalanceInExaEs[msg.sender]));
+        return true;
+    }
+
+    function withdrawES() public {
+        require(bettorWonExaEs[msg.sender] > 0);
+        bettorWonExaEs[msg.sender] = 0;
+        esTokenContract.transfer(msg.sender, bettorWonExaEs[msg.sender]);
     }
 
 }
@@ -207,7 +223,6 @@ contract Bet {
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
         require(now <= pauseTimestamp);
         require(_betTokensInExaEs >= minimumBetInExaEs);
-        //require(betDeEx.getBettorBalance(msg.sender) >= _betTokensInExaEs); removing as below line is sufficient
 
         // betDeEx contract transfers the tokens to it self
         require(betDeEx.collectBettorTokens(msg.sender, _betTokensInExaEs));
@@ -238,8 +253,6 @@ contract Bet {
             require(false);
         }
 
-
-        //emit NewBetting(msg.sender, _betTokensInExaEs, _choice, _arrayIndex);
         betDeEx.emitNewBettingEvent(msg.sender, _choice, _arrayIndex);
     }
 
@@ -258,6 +271,10 @@ contract Bet {
             require(false);
         }
 
+        endedBy = msg.sender;
+        endTimestamp = now;
+        finalResult = _choice;
+
         // the platform fee is excluded from entire bet balance and this is the amount to be distributed
         uint256 totalPrize = betBalanceInExaEs().mul(pricePercentPerThousand).div(1000);
 
@@ -265,7 +282,8 @@ contract Bet {
         for(uint256 i = 0; i < _winnerBettors.length; i++) {
             if(_winnerBettors[i].bettorAddress != address(0)) {
                 uint256 _winningAmount = _winnerBettors[i].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[_choice]);
-                betDeEx.sendTokensToAddress(
+                // add tokens to users betdeex wallet
+                betDeEx.sendTokensToWallet(
                     _winnerBettors[i].bettorAddress,
                     _winningAmount
                 );
@@ -275,17 +293,13 @@ contract Bet {
         // this is the left platform fee according to the totalPrize variable above
         uint256 _platformFee = betBalanceInExaEs();
 
-        endedBy = msg.sender;
-
         // sending plaftrom fee to the super manager
-        require(betDeEx.sendTokensToAddress(betDeEx.superManager(), _platformFee));
+        require(betDeEx.collectPlatformFee());
 
-        endTimestamp = now;
-        finalResult = _choice;
         betDeEx.emitEndEvent(endedBy, _choice, _platformFee);
     }
 
-    // get number of bettors on this bet by choice 
+    // get number of bettors on this bet by choice
     function getNumberOfChoiceBettors(uint8 _choice) public view returns (uint256) {
         if (_choice == 0) {
             return noBettors.length;

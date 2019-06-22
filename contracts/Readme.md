@@ -31,6 +31,7 @@
 - Manager can only create bets, they cannot give another account status of Manager.
 - The bet is deployed as a Smart Contract. And anyone can spend ES tokens more than the specified minimum for every bet on Yes, No or Draw.
 - Bettor of a Bet is an account that has spent ES on the bet on Yes, No or Draw.
+- To place a bet, bettor either needs to have enough ES allowance for BetDeEx smart contract or he/she should already have some ES in bettorWonExaEs mapping stored in BetDeEx smart contract (amount won by Bettor in previous bets is transferred to bettorWonExaEs mapping).
 - Bettors can place multiple bettings, on multiple choices, these will be considered as separate bettings.
 - The bet will continue to accept bets only until pauseTimestamp, which will be specified by manager while creating the bet.
 - A bet is ended by a manager after pauseTimestamp, by providing the winning choice and a small portion of the prize pool is to be collected as fees. For e.g. 0.2%. This can be different for different bets.
