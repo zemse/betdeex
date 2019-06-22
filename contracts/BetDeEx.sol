@@ -27,7 +27,7 @@ contract BetDeEx {
         address indexed _betAddress,
         address indexed _bettorAddress,
         uint8 indexed _choice,
-        uint256 _bettorIndex
+        uint256 _betTokensInExaEs
     );
 
     event EndBetContract (
@@ -114,8 +114,8 @@ contract BetDeEx {
 
 
     // this functionality is only for bet contracts to emit a event when a new bet is placed so that front end can get the information by subscribing to  contract
-    function emitNewBettingEvent(address _bettorAddress, uint8 _choice, uint256 _bettorIndex) public onlyBetContract {
-        emit NewBetting(msg.sender, _bettorAddress, _choice, _bettorIndex);
+    function emitNewBettingEvent(address _bettorAddress, uint8 _choice, uint256 _betTokensInExaEs) public onlyBetContract {
+        emit NewBetting(msg.sender, _bettorAddress, _choice, _betTokensInExaEs);
     }
 
     // this functionality is only for bet contracts to emit event when a bet is ended so that front end can get the information by subscribing to  contract
@@ -144,10 +144,11 @@ contract BetDeEx {
         return true;
     }
 
+
     // this method is used to transfer prizes to winners
-    function sendTokensToWallet(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
+    function sendTokensToAddress(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
         betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].sub(_tokensInExaEs);
-        bettorWonExaEs[_to] = bettorWonExaEs[_to].add(_tokensInExaEs);
+        require(esTokenContract.transfer(_to, _tokensInExaEs));
 
         emit TransferES(msg.sender, _to, _tokensInExaEs);
         return true;
@@ -158,20 +159,14 @@ contract BetDeEx {
         return true;
     }
 
-    function withdrawES() public {
-        require(bettorWonExaEs[msg.sender] > 0);
-        bettorWonExaEs[msg.sender] = 0;
-        esTokenContract.transfer(msg.sender, bettorWonExaEs[msg.sender]);
-    }
-
 }
 
 contract Bet {
     using SafeMath for uint256;
 
     struct Bettor {
-        address bettorAddress;
         uint256 betAmountInExaEs;
+        uint8 choice;
     }
 
     BetDeEx betDeEx;
@@ -191,11 +186,11 @@ contract Bet {
     uint256 public minimumBetInExaEs; // minimum amount required to enter bet
     uint256 public pricePercentPerThousand; // percentage of bet balance which will be dristributed to winners and rest is platform fee
     uint256[3] public totalBetTokensInExaEsByChoice = [0, 0, 0]; // array of total bet value of no, yes, draw voters
+    uint256[3] public getNumberOfChoiceBettors = [0, 0, 0]; // stores number of bettors in a choice
 
-    // stores bettor details by choice
-    Bettor[] public noBettors;
-    Bettor[] public yesBettors;
-    Bettor[] public drawBettors;
+    uint256 public totalPrize; // this is the prize (platform fee is already excluded)
+
+    mapping(address => Bettor) public bettorDetails; // mapps addresses to betAmount and choice
 
     modifier onlyManager() {
         require(betDeEx.isManager(msg.sender));
@@ -227,71 +222,39 @@ contract Bet {
         // betDeEx contract transfers the tokens to it self
         require(betDeEx.collectBettorTokens(msg.sender, _betTokensInExaEs));
 
-        uint256 _arrayIndex;
-        if (_choice == 0) {
-            totalBetTokensInExaEsByChoice[0] = totalBetTokensInExaEsByChoice[0].add(_betTokensInExaEs);
-            _arrayIndex = noBettors.length;
-            noBettors.push(Bettor({
-                bettorAddress: msg.sender,
-                betAmountInExaEs: _betTokensInExaEs
-            }));
-        } else if (_choice == 1) {
-            totalBetTokensInExaEsByChoice[1] = totalBetTokensInExaEsByChoice[1].add(_betTokensInExaEs);
-            _arrayIndex = yesBettors.length;
-            yesBettors.push(Bettor({
-                bettorAddress: msg.sender,
-                betAmountInExaEs: _betTokensInExaEs
-            }));
-        } else if (_choice == 2 && isDrawPossible) {
-            totalBetTokensInExaEsByChoice[2] = totalBetTokensInExaEsByChoice[2].add(_betTokensInExaEs);
-            _arrayIndex = drawBettors.length;
-            drawBettors.push(Bettor({
-                bettorAddress: msg.sender,
-                betAmountInExaEs: _betTokensInExaEs
-            }));
-        } else {
+        if (_choice > 2 || (_choice == 2 && !isDrawPossible) ) {
             require(false);
         }
 
-        betDeEx.emitNewBettingEvent(msg.sender, _choice, _arrayIndex);
+        getNumberOfChoiceBettors[_choice] = getNumberOfChoiceBettors[_choice].add(1);
+        totalBetTokensInExaEsByChoice[_choice] = totalBetTokensInExaEsByChoice[_choice].add(_betTokensInExaEs);
+        bettorDetails[msg.sender] = Bettor({
+            betAmountInExaEs: _betTokensInExaEs,
+            choice: _choice
+        });
+
+        betDeEx.emitNewBettingEvent(msg.sender, _choice, _betTokensInExaEs);
     }
 
     // this method is used by manager to give correct answer and transfer prize to winners
     function endBet(uint8 _choice) public onlyManager {
         require(now >= pauseTimestamp);
 
-        // because its required to initialise the pointer with something.
-        Bettor[] storage _winnerBettors = noBettors;
-        if (_choice == 1) {
-            _winnerBettors = yesBettors;
-        } else if (_choice == 2) {
-            require(isDrawPossible);
-            _winnerBettors = drawBettors;
-        } else if (_choice > 2) {
+        if(_choice < 2  || (_choice == 2 && isDrawPossible)) {
+            finalResult = _choice;
+        } else {
             require(false);
         }
 
         endedBy = msg.sender;
         endTimestamp = now;
-        finalResult = _choice;
+
 
         // the platform fee is excluded from entire bet balance and this is the amount to be distributed
-        uint256 totalPrize = betBalanceInExaEs().mul(pricePercentPerThousand).div(1000);
-
-        // sending the platform fee excluded amount to the winners
-        for(uint256 i = 0; i < _winnerBettors.length; i++) {
-            if(_winnerBettors[i].bettorAddress != address(0)) {
-                uint256 _winningAmount = _winnerBettors[i].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[_choice]);
-                // add tokens to users betdeex wallet
-                betDeEx.sendTokensToWallet(
-                    _winnerBettors[i].bettorAddress,
-                    _winningAmount
-                );
-            }
-        }
+        totalPrize = betBalanceInExaEs().mul(pricePercentPerThousand).div(1000);
 
         // this is the left platform fee according to the totalPrize variable above
-        uint256 _platformFee = betBalanceInExaEs();
+        uint256 _platformFee = betBalanceInExaEs().sub(totalPrize);
 
         // sending plaftrom fee to the super manager
         require(betDeEx.collectPlatformFee());
@@ -299,15 +262,26 @@ contract Bet {
         betDeEx.emitEndEvent(endedBy, _choice, _platformFee);
     }
 
-    // get number of bettors on this bet by choice
-    function getNumberOfChoiceBettors(uint8 _choice) public view returns (uint256) {
-        if (_choice == 0) {
-            return noBettors.length;
-        } else if (_choice == 1) {
-            return yesBettors.length;
-        } else {
-            return drawBettors.length;
-        }
+    // this can be called by anyone to see how much winners are getting
+    function seeWinnerPrize(address _bettorAddress) public view returns (uint256) {
+        require(endTimestamp > 0);
+        require(bettorDetails[_bettorAddress].choice == finalResult);
+
+        return bettorDetails[_bettorAddress].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
+    }
+
+    // will be called after bet ends and winner bettors can withdraw their prize share
+    function withdrawPrize() public {
+        require(endTimestamp > 0);
+        require(bettorDetails[msg.sender].choice == finalResult);
+        require(bettorDetails[msg.sender].betAmountInExaEs > minimumBetInExaEs); // to keep out option 0
+
+        uint256 _winningAmount = bettorDetails[msg.sender].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
+
+        betDeEx.sendTokensToAddress(
+            msg.sender,
+            _winningAmount
+        );
     }
 
 }
