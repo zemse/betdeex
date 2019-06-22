@@ -11,7 +11,6 @@ contract BetDeEx {
     EraswapToken esTokenContract;
 
     mapping(address => uint256) public betBalanceInExaEs; // all ES tokens are transfered to main BetDeEx address for common allowance in ERC20 so this mapping stores total ES tokens betted in each bet.
-    mapping(address => uint256) public bettorWonExaEs; // prizes are stored in this wallet and bettor can withdraw it anytime to main ES contract
     mapping(address => bool) public isBetValid; // stores authentic bet contracts (only deployed through this contract)
     mapping(address => bool) public isManager; // stores addresses who are given manager privileges by superManager
 
@@ -131,15 +130,7 @@ contract BetDeEx {
 
     // this method is used to transfer tokens from bettor wallet to bet
     function collectBettorTokens(address _from, uint256 _betTokensInExaEs) public onlyBetContract returns (bool) {
-        // first check if user has money in bettorWonExaEs, collect from that.
-        // if insufficient in bettorWonExaEs then transferFrom the remaining ES from token contract.
-        if(bettorWonExaEs[_from] >= _betTokensInExaEs) {
-            bettorWonExaEs[_from] = bettorWonExaEs[_from].sub(_betTokensInExaEs);
-        } else {
-            uint256 _remainingAmount = _betTokensInExaEs.sub(bettorWonExaEs[_from]);
-            bettorWonExaEs[_from] = 0;
-            require(esTokenContract.transferFrom(_from, address(this), _remainingAmount));
-        }
+        require(esTokenContract.transferFrom(_from, address(this), _betTokensInExaEs));
         betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].add(_betTokensInExaEs);
         return true;
     }
