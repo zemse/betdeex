@@ -32,7 +32,7 @@
 - The bet is deployed as a Smart Contract. And anyone can spend ES tokens more than the specified minimum for every bet on Yes, No or Draw.
 - Bettor of a Bet is an account that has spent ES on the bet on Yes, No or Draw.
 - Bettors can place multiple bettings, on multiple choices, these will be considered as separate bettings.
-- The bet will continue to accept bets only until pauseBlockNumber, which will be specified by manager while creating the bet.
-- A bet is ended by a manager by providing the winning choice and a small portion of the prize pool is to be collected as fees. For e.g. 0.2%. This can be different for different bets.
+- The bet will continue to accept bets only until pauseTimestamp, which will be specified by manager while creating the bet.
+- A bet is ended by a manager after pauseTimestamp, by providing the winning choice and a small portion of the prize pool is to be collected as fees. For e.g. 0.2%. This can be different for different bets.
 - The funds are distributed among the Bettors of the betting in the bet in proportion of their ES amount (For eg. 100ES, 200ES, 300ES are betted on Yes. Sum of No and Draw betting is 600ES and if finally it is declared that Yes is winner. Total bet sums up to 1200ES, from 1200ES first a small platform fee will be collected 0.2%, platform fee is 2.4ES, then prize pool is 1200-2.4 = 1197.6ES and it will be distributed in ratio of 1:2:3 i.e 199.6ES, 399.2ES and 598.8ES will be sent to winners).
 - After a bet is ended, it should be available for querying past data / audits.

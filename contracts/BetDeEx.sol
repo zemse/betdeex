@@ -76,9 +76,9 @@ contract BetDeEx {
         uint256 _minimumBet,
         uint256 _pricePercent,
         bool _isDrawPossible,
-        uint256 _pauseBlockNumber // bet will be open for betting until this block, after this block numberexceeds any user will not be able to place bet. and manager can only end bet after this time
+        uint256 _pauseTimestamp // bet will be open for betting until this timestamp, after this timestamp, any user will not be able to place bet. and manager can only end bet after this time
     ) public onlyManager returns (address) {
-        Bet _newBet = new Bet(_description, _category, _subCategory, _minimumBet, _pricePercent, _isDrawPossible, _pauseBlockNumber);
+        Bet _newBet = new Bet(_description, _category, _subCategory, _minimumBet, _pricePercent, _isDrawPossible, _pauseTimestamp);
         bets.push(address(_newBet));
         isBetValid[address(_newBet)] = true;
 
@@ -161,16 +161,16 @@ contract Bet {
     BetDeEx betDeEx;
 
     string public description; // question text of the bet
-    bool isDrawPossible; // if false then user cannot bet on draw choice
+    bool public isDrawPossible; // if false then user cannot bet on draw choice
     uint8 public category; // sports, movies
     uint8 public subCategory; // cricket, football
 
     uint8 public finalResult; // given a value when manager ends bet
     address public endedBy; // address of manager who enters the correct choice while ending the bet
 
-    uint256 public creationBlockNumber; // (predefined)
-    uint256 public pauseBlockNumber; // (predefined) after this no more bettings are not allowed by users
-    uint256 public endBlockNumber; // (defined when manager ends bet)
+    uint256 public creationTimestamp; // set during bet creation
+    uint256 public pauseTimestamp; // set as an argument by deployer
+    uint256 public endTimestamp; // set when a manager ends bet and prizes are distributed
 
     uint256 public minimumBetInExaEs; // minimum amount required to enter bet
     uint256 public pricePercentPerThousand; // percentage of bet balance which will be dristributed to winners and rest is platform fee
@@ -187,7 +187,7 @@ contract Bet {
     }
 
     // _pricePercentPerThousand is an integer from 0 to 1000. if we want to keep .2% then its value is 998. if 2% then value is 980
-    constructor(string memory _description, uint8 _category, uint8 _subCategory, uint256 _minimumBetInExaEs, uint256 _pricePercentPerThousand, bool _isDrawPossible, uint256 _pauseBlockNumber) public {
+    constructor(string memory _description, uint8 _category, uint8 _subCategory, uint256 _minimumBetInExaEs, uint256 _pricePercentPerThousand, bool _isDrawPossible, uint256 _pauseTimestamp) public {
         description = _description;
         isDrawPossible = _isDrawPossible;
         category = _category;
@@ -195,8 +195,8 @@ contract Bet {
         minimumBetInExaEs = _minimumBetInExaEs;
         pricePercentPerThousand = _pricePercentPerThousand;
         betDeEx = BetDeEx(msg.sender);
-        creationBlockNumber = block.number;
-        pauseBlockNumber = _pauseBlockNumber;
+        creationTimestamp = now;
+        pauseTimestamp = _pauseTimestamp;
     }
 
     function betBalanceInExaEs() public view returns (uint256) {
@@ -205,7 +205,7 @@ contract Bet {
 
     // _choice should be 0, 1, 2; no => 0, yes => 1, draw => 2.
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
-        require(block.number <= pauseBlockNumber);
+        require(now <= pauseTimestamp);
         require(_betTokensInExaEs >= minimumBetInExaEs);
         //require(betDeEx.getBettorBalance(msg.sender) >= _betTokensInExaEs); removing as below line is sufficient
 
@@ -245,7 +245,7 @@ contract Bet {
 
     // this method is used by manager to give correct answer and transfer prize to winners
     function endBet(uint8 _choice) public onlyManager {
-        require(block.number >= pauseBlockNumber);
+        require(now >= pauseTimestamp);
 
         // because its required to initialise the pointer with something.
         Bettor[] storage _winnerBettors = noBettors;
@@ -280,7 +280,7 @@ contract Bet {
         // sending plaftrom fee to the super manager
         require(betDeEx.sendTokensToAddress(betDeEx.superManager(), _platformFee));
 
-        endBlockNumber = block.number;
+        endTimestamp = now;
         finalResult = _choice;
         betDeEx.emitEndEvent(endedBy, _choice, _platformFee);
     }
