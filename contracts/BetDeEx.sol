@@ -145,8 +145,8 @@ contract BetDeEx {
         return true;
     }
 
-    function collectPlatformFee() public onlyBetContract returns (bool) {
-        require(esTokenContract.transfer(superManager, betBalanceInExaEs[msg.sender]));
+    function collectPlatformFee(uint256 _platformFee) public onlyBetContract returns (bool) {
+        require(esTokenContract.transfer(superManager, _platformFee));
         return true;
     }
 
@@ -207,7 +207,7 @@ contract Bet {
 
     // _choice should be 0, 1, 2; no => 0, yes => 1, draw => 2.
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
-        require(now <= pauseTimestamp);
+        require(now < pauseTimestamp);
         require(_betTokensInExaEs >= minimumBetInExaEs);
 
         // betDeEx contract transfers the tokens to it self
@@ -227,9 +227,14 @@ contract Bet {
         betDeEx.emitNewBettingEvent(msg.sender, _choice, _betTokensInExaEs);
     }
 
+    function getContractTime() public view returns(uint256){
+        return now;
+    }
+
     // this method is used by manager to give correct answer and transfer prize to winners
     function endBet(uint8 _choice) public onlyManager {
         require(now >= pauseTimestamp);
+        require(endedBy == address(0), "Bet Already Ended");
 
         if(_choice < 2  || (_choice == 2 && isDrawPossible)) {
             finalResult = _choice;
@@ -248,7 +253,7 @@ contract Bet {
         uint256 _platformFee = betBalanceInExaEs().sub(totalPrize);
 
         // sending plaftrom fee to the super manager
-        require(betDeEx.collectPlatformFee());
+        require(betDeEx.collectPlatformFee(_platformFee));
 
         betDeEx.emitEndEvent(endedBy, _choice, _platformFee);
     }
