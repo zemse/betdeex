@@ -155,10 +155,9 @@ contract BetDeEx {
 contract Bet {
     using SafeMath for uint256;
 
-    struct Bettor {
-        uint256 betAmountInExaEs;
-        uint8 choice;
-    }
+    // struct Bettor {
+    //     uint256[3] betAmountInExaEsByChoice; // Bettor can bet on multiple choices
+    // }
 
     BetDeEx betDeEx;
 
@@ -181,7 +180,8 @@ contract Bet {
 
     uint256 public totalPrize; // this is the prize (platform fee is already excluded)
 
-    mapping(address => Bettor) public bettorDetails; // mapps addresses to betAmount and choice
+    //mapping(address => Bettor) betAmountInExaEsByChoice; // mapps addresses to betAmount and choice
+    mapping(address => uint256[3]) bettorBetAmountInExaEsByChoice; // mapps addresses to array of betAmount by choice
 
     modifier onlyManager() {
         require(betDeEx.isManager(msg.sender));
@@ -219,10 +219,12 @@ contract Bet {
 
         getNumberOfChoiceBettors[_choice] = getNumberOfChoiceBettors[_choice].add(1);
         totalBetTokensInExaEsByChoice[_choice] = totalBetTokensInExaEsByChoice[_choice].add(_betTokensInExaEs);
-        bettorDetails[msg.sender] = Bettor({
-            betAmountInExaEs: _betTokensInExaEs,
-            choice: _choice
-        });
+        // bettorDetails[msg.sender] = Bettor({
+        //     betAmountInExaEs: _betTokensInExaEs,
+        //     choice: _choice
+        // });
+
+        bettorBetAmountInExaEsByChoice[msg.sender][_choice] = bettorBetAmountInExaEsByChoice[msg.sender][_choice].add(_betTokensInExaEs);
 
         betDeEx.emitNewBettingEvent(msg.sender, _choice, _betTokensInExaEs);
     }
@@ -261,18 +263,17 @@ contract Bet {
     // this can be called by anyone to see how much winners are getting
     function seeWinnerPrize(address _bettorAddress) public view returns (uint256) {
         require(endTimestamp > 0);
-        require(bettorDetails[_bettorAddress].choice == finalResult);
+        //require(bettorBetAmountInExaEsByChoice[_bettorAddress][finalResult] > 0);
 
-        return bettorDetails[_bettorAddress].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
+        return bettorBetAmountInExaEsByChoice[_bettorAddress][finalResult].mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
     }
 
     // will be called after bet ends and winner bettors can withdraw their prize share
     function withdrawPrize() public {
         require(endTimestamp > 0);
-        require(bettorDetails[msg.sender].choice == finalResult);
-        require(bettorDetails[msg.sender].betAmountInExaEs > minimumBetInExaEs); // to keep out option 0
+        require(bettorBetAmountInExaEsByChoice[msg.sender][finalResult] > minimumBetInExaEs); // to keep out option 0
 
-        uint256 _winningAmount = bettorDetails[msg.sender].betAmountInExaEs.mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
+        uint256 _winningAmount = bettorBetAmountInExaEsByChoice[msg.sender][finalResult].mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
 
         betDeEx.sendTokensToAddress(
             msg.sender,
