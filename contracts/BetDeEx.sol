@@ -182,6 +182,7 @@ contract Bet {
 
     //mapping(address => Bettor) betAmountInExaEsByChoice; // mapps addresses to betAmount and choice
     mapping(address => uint256[3]) bettorBetAmountInExaEsByChoice; // mapps addresses to array of betAmount by choice
+    mapping(address => bool) bettorHasClaimed; // set to true when bettor claims the prize
 
     modifier onlyManager() {
         require(betDeEx.isManager(msg.sender));
@@ -271,14 +272,17 @@ contract Bet {
     // will be called after bet ends and winner bettors can withdraw their prize share
     function withdrawPrize() public {
         require(endTimestamp > 0);
+        require(!bettorHasClaimed[msg.sender]);
         require(bettorBetAmountInExaEsByChoice[msg.sender][finalResult] > minimumBetInExaEs); // to keep out option 0
-
         uint256 _winningAmount = bettorBetAmountInExaEsByChoice[msg.sender][finalResult].mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
-
+        bettorHasClaimed[msg.sender] = true;
         betDeEx.sendTokensToAddress(
             msg.sender,
             _winningAmount
         );
     }
 
+    function getBettorBetAmountInExaEsByChoice(uint8 _choice) public view returns (uint256) {
+        return bettorBetAmountInExaEsByChoice[msg.sender][_choice];
+    }
 }
