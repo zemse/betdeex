@@ -182,7 +182,7 @@ contract Bet {
 
     //mapping(address => Bettor) betAmountInExaEsByChoice; // mapps addresses to betAmount and choice
     mapping(address => uint256[3]) bettorBetAmountInExaEsByChoice; // mapps addresses to array of betAmount by choice
-    mapping(address => bool) bettorHasClaimed; // set to true when bettor claims the prize
+    mapping(address => bool) public bettorHasClaimed; // set to true when bettor claims the prize
 
     modifier onlyManager() {
         require(betDeEx.isManager(msg.sender));
