@@ -2,7 +2,7 @@ pragma solidity ^0.5.10;
 
 import './ESContract.sol'; /// @dev also contains safeMath
 
-/// @title BetDeEx Smart Contract
+/// @title BetDeEx Smart Contract - The Decentralized Prediction Platform of Era Swap Ecosystem
 /// @author The EraSwap Team
 /// @notice This contract is used by manager to deploy new Bet contracts
 /// @dev This contract also acts as treasurer
