@@ -197,7 +197,7 @@ contract Bet {
 
     uint256 public totalPrize; /// @dev this is the prize (platform fee is already excluded)
 
-    mapping(address => uint256[3]) bettorBetAmountInExaEsByChoice; /// @dev mapps addresses to array of betAmount by choice
+    mapping(address => uint256[3]) public bettorBetAmountInExaEsByChoice; /// @dev mapps addresses to array of betAmount by choice
     mapping(address => bool) public bettorHasClaimed; /// @dev set to true when bettor claims the prize
 
     modifier onlyManager() {
@@ -301,13 +301,5 @@ contract Bet {
             msg.sender,
             _winningAmount
         );
-    }
-
-    /// @notice this function is used to see bet amount of any user
-    /// @param _userAddress is address of user we want to see
-    /// @param _choice is option that user selected and betted
-    /// @return amount of ExaEs that particular user bet on a particular choice
-    function getBettorBetAmountInExaEsByChoice(address _userAddress, uint8 _choice) public view returns (uint256) {
-        return bettorBetAmountInExaEsByChoice[_userAddress][_choice];
     }
 }
