@@ -49,17 +49,17 @@ contract BetDeEx {
     );
 
     modifier onlySuperManager() {
-        require(msg.sender == superManager);
+        require(msg.sender == superManager, "only superManager can call");
         _;
     }
 
     modifier onlyManager() {
-        require(isManager[msg.sender]);
+        require(isManager[msg.sender], "only manager can call");
         _;
     }
 
     modifier onlyBetContract() {
-        require(isBetValid[msg.sender]);
+        require(isBetValid[msg.sender], "only bet contract can call");
         _;
     }
 
@@ -148,7 +148,7 @@ contract BetDeEx {
 
     /// @notice this is an internal functionality that is used to transfer tokens from bettor wallet to BetDeEx contract
     function collectBettorTokens(address _from, uint256 _betTokensInExaEs) public onlyBetContract returns (bool) {
-        require(esTokenContract.transferFrom(_from, address(this), _betTokensInExaEs));
+        require(esTokenContract.transferFrom(_from, address(this), _betTokensInExaEs), "tokens should be collected from user");
         betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].add(_betTokensInExaEs);
         return true;
     }
@@ -156,7 +156,7 @@ contract BetDeEx {
     /// @notice this is an internal functionality that is used to transfer prizes to winners
     function sendTokensToAddress(address _to, uint256 _tokensInExaEs) public onlyBetContract returns (bool) {
         betBalanceInExaEs[msg.sender] = betBalanceInExaEs[msg.sender].sub(_tokensInExaEs);
-        require(esTokenContract.transfer(_to, _tokensInExaEs));
+        require(esTokenContract.transfer(_to, _tokensInExaEs), "tokens should be sent");
 
         emit TransferES(msg.sender, _to, _tokensInExaEs);
         return true;
@@ -164,7 +164,7 @@ contract BetDeEx {
 
     /// @notice this is an internal functionality that is used to collect platform fee
     function collectPlatformFee(uint256 _platformFee) public onlyBetContract returns (bool) {
-        require(esTokenContract.transfer(superManager, _platformFee));
+        require(esTokenContract.transfer(superManager, _platformFee), "platform fee should be collected");
         return true;
     }
 
@@ -201,7 +201,7 @@ contract Bet {
     mapping(address => bool) public bettorHasClaimed; /// @dev set to true when bettor claims the prize
 
     modifier onlyManager() {
-        require(betDeEx.isManager(msg.sender));
+        require(betDeEx.isManager(msg.sender), "only manager can call");
         _;
     }
 
@@ -234,15 +234,15 @@ contract Bet {
     /// @param _choice should be 0, 1, 2; no => 0, yes => 1, draw => 2
     /// @param _betTokensInExaEs is amount of bet
     function enterBet(uint8 _choice, uint256 _betTokensInExaEs) public {
-        require(now < pauseTimestamp);
-        require(_betTokensInExaEs >= minimumBetInExaEs);
+        require(now < pauseTimestamp, "cannot enter after pause time");
+        require(_betTokensInExaEs >= minimumBetInExaEs, "betting tokens should be more than minimum");
 
         /// @dev betDeEx contract transfers the tokens to it self
-        require(betDeEx.collectBettorTokens(msg.sender, _betTokensInExaEs));
+        require(betDeEx.collectBettorTokens(msg.sender, _betTokensInExaEs), "betting tokens should be collected");
 
         // @dev _choice can be 0 or 1 and it can be 2 only if isDrawPossible is true
         if (_choice > 2 || (_choice == 2 && !isDrawPossible) ) {
-            require(false);
+            require(false, "this choice is not available");
         }
 
         getNumberOfChoiceBettors[_choice] = getNumberOfChoiceBettors[_choice].add(1);
@@ -256,14 +256,14 @@ contract Bet {
     /// @notice this function is used by manager to load correct answer
     /// @param _choice is the correct choice
     function endBet(uint8 _choice) public onlyManager {
-        require(now >= pauseTimestamp);
+        require(now >= pauseTimestamp, "cannot end bet before pause time");
         require(endedBy == address(0), "Bet Already Ended");
 
         // @dev _choice can be 0 or 1 and it can be 2 only if isDrawPossible is true
         if(_choice < 2  || (_choice == 2 && isDrawPossible)) {
             finalResult = _choice;
         } else {
-            require(false);
+            require(false, "this choice is not available");
         }
 
         endedBy = msg.sender;
@@ -276,7 +276,7 @@ contract Bet {
         uint256 _platformFee = betBalanceInExaEs().sub(totalPrize);
 
         /// @dev sending plaftrom fee to the super manager
-        require(betDeEx.collectPlatformFee(_platformFee));
+        require(betDeEx.collectPlatformFee(_platformFee), "platform fee should be collected");
 
         betDeEx.emitEndEvent(endedBy, _choice, _platformFee);
     }
@@ -285,16 +285,16 @@ contract Bet {
     /// @param _bettorAddress is address whose prize we want to see
     /// @return winner prize of input address
     function seeWinnerPrize(address _bettorAddress) public view returns (uint256) {
-        require(endTimestamp > 0);
+        require(endTimestamp > 0, "cannot see prize before bet ends");
 
         return bettorBetAmountInExaEsByChoice[_bettorAddress][finalResult].mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
     }
 
     /// @notice this function will be called after bet ends and winner bettors can withdraw their prize share
     function withdrawPrize() public {
-        require(endTimestamp > 0);
-        require(!bettorHasClaimed[msg.sender]);
-        require(bettorBetAmountInExaEsByChoice[msg.sender][finalResult] > minimumBetInExaEs); /// @dev to keep out option 0
+        require(endTimestamp > 0, "cannot withdraw before end time");
+        require(!bettorHasClaimed[msg.sender], "cannot claim again");
+        require(bettorBetAmountInExaEsByChoice[msg.sender][finalResult] > minimumBetInExaEs, "caller should have a betting"); /// @dev to keep out option 0
         uint256 _winningAmount = bettorBetAmountInExaEsByChoice[msg.sender][finalResult].mul(totalPrize).div(totalBetTokensInExaEsByChoice[finalResult]);
         bettorHasClaimed[msg.sender] = true;
         betDeEx.sendTokensToAddress(
