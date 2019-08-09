@@ -1,4 +1,4 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.5.10;
 
 import './ESContract.sol'; /// @dev also contains safeMath
 
@@ -75,7 +75,7 @@ contract BetDeEx {
     /// @param _description is the question of Bet in plain English, bettors have to understand the bet description and later choose to bet on yes no or draw according to their preference
     /// @param _category is the broad category for example Sports. Purpose of this is only to filter bets and show in UI, hence the name of the category is not stored in smart contract and category is repressented by a number (0, 1, 2, 3...)
     /// @param _subCategory is a specific category for example Football. Each category will have sub categories represented by a number (0, 1, 2, 3...)
-    /// @param _minimumBet is the least amount of ExaES that can be betted, any bet participant (bettor) will have to bet this amount or higher. Betting higher amount gives more share of winning amount
+    /// @param _minimumBetInExaEs is the least amount of ExaES that can be betted, any bet participant (bettor) will have to bet this amount or higher. Betting higher amount gives more share of winning amount
     /// @param _prizePercentPerThousand is a form of representation of platform fee. It is a number less than or equal to 1000. For eg 2% is to be collected as platform fee then this value would be 980. If 0.2% then 998.
     /// @param _isDrawPossible is functionality for allowing a draw option
     /// @param _pauseTimestamp Bet will be open for betting until this timestamp, after this timestamp, any user will not be able to place bet. and manager can only end bet after this time
@@ -84,7 +84,7 @@ contract BetDeEx {
         string memory _description,
         uint8 _category,
         uint8 _subCategory,
-        uint256 _minimumBet,
+        uint256 _minimumBetInExaEs,
         uint256 _prizePercentPerThousand,
         bool _isDrawPossible,
         uint256 _pauseTimestamp
@@ -93,7 +93,7 @@ contract BetDeEx {
           _description,
           _category,
           _subCategory,
-          _minimumBet,
+          _minimumBetInExaEs,
           _prizePercentPerThousand,
           _isDrawPossible,
           _pauseTimestamp
@@ -209,7 +209,7 @@ contract Bet {
     /// @param _description is the question of Bet in plain English, bettors have to understand the bet description and later choose to bet on yes no or draw according to their preference
     /// @param _category is the broad category for example Sports. Purpose of this is only to filter bets and show in UI, hence the name of the category is not stored in smart contract and category is repressented by a number (0, 1, 2, 3...)
     /// @param _subCategory is a specific category for example Football. Each category will have sub categories represented by a number (0, 1, 2, 3...)
-    /// @param _minimumBet is the least amount of ExaES that can be betted, any bet participant (bettor) will have to bet this amount or higher. Betting higher amount gives more share of winning amount
+    /// @param _minimumBetInExaEs is the least amount of ExaES that can be betted, any bet participant (bettor) will have to bet this amount or higher. Betting higher amount gives more share of winning amount
     /// @param _prizePercentPerThousand is a form of representation of platform fee. It is a number less than or equal to 1000. For eg 2% is to be collected as platform fee then this value would be 980. If 0.2% then 998.
     /// @param _isDrawPossible is functionality for allowing a draw option
     /// @param _pauseTimestamp Bet will be open for betting until this timestamp, after this timestamp, any user will not be able to place bet. and manager can only end bet after this time
